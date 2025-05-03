@@ -1,0 +1,46 @@
+@import 'tailwindcss';
+
+/* global styles in src/styles.css */
+.questionnaire-container {
+  display: flex;
+  gap: 2rem;
+}
+
+.sidebar {
+  width: 250px;
+  padding: 1rem;
+  background-color: #f4f4f4;
+}
+
+.step-form {
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.error {
+  color: red;
+  font-size: 0.875rem;
+}
+
+.form-actions button {
+  margin: 0.5rem;
+}
+
+.review-summary {
+  margin: 1rem 0;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #cccccc;
+}

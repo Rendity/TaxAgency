@@ -1,0 +1,166 @@
+{
+  "RootLayout": {
+    "home_link": "Accueil",
+    "about_link": "A propos",
+    "counter_link": "Compteur",
+    "portfolio_link": "Portfolio",
+    "sign_in_link": "Se connecter",
+    "sign_up_link": "S'inscrire"
+  },
+  "BaseTemplate": {
+    "description": "Startercode für Ihren nächsten Js -Boilerplate mit Rückenwind -CSS",
+    "made_with": "Fait avec <author></author>."
+  },
+  "Index": {
+    "meta_title": "Weiter.js Boilerplate -Präsentation",
+    "meta_description": "Der nächste JS -Boilerplate ist der perfekte Startercode für Ihr Projekt. \nErstellen Sie Ihre Reaktionsanwendung mit dem nächsten.js -Framework.",
+    "sponsors_title": "Partenaires"
+  },
+  "Counter": {
+    "meta_title": "Compteur",
+    "meta_description": "Un exemple d'opération DB",
+    "loading_counter": "Chargement du compteur...",
+    "security_powered_by": "Sécurité, détection de bot et rate limiting propulsés par"
+  },
+  "CounterForm": {
+    "presentation": "Le compteur est stocké dans la base de données et incrémenté par la valeur que vous fournissez.",
+    "label_increment": "Incrémenter de",
+    "button_increment": "Incrémenter"
+  },
+  "CurrentCount": {
+    "count": "Nombre : {count}"
+  },
+  "About": {
+    "meta_title": "A propos",
+    "meta_description": "Über Seitenbeschreibung",
+    "about_paragraph": "Willkommen zu unserer About Page! \nWir sind ein Team von leidenschaftlichen Personen, die sich der Schaffung von erstaunlicher Software widmen.",
+    "translation_powered_by": "Traduction propulsée par"
+  },
+  "Portfolio": {
+    "meta_title": "Portfolio",
+    "meta_description": "Bienvenue sur la page de mon portfolio !",
+    "presentation": "Bienvenue sur ma page portfolio ! Vous trouverez ici une collection soigneusement organisée de mon travail et de mes réalisations. À travers ce portfolio, je mets en valeur mon expertise, ma créativité et la valeur que je peux apporter à vos projets.",
+    "portfolio_name": "Portfolio {name}",
+    "error_reporting_powered_by": "Rapport d'erreur propulsé par",
+    "coverage_powered_by": "Couverture de code propulsée par"
+  },
+  "PortfolioSlug": {
+    "meta_title": "Portfolio {slug}",
+    "meta_description": "Description du Portfolio {slug}",
+    "header": "Portfolio {slug}",
+    "content": "Créé un ensemble de matériel promotionnel et d'éléments de marquage pour un événement d'entreprise. Conçu un thème visuellement unifié, englobant un logo, des affiches, des bannières et des actifs numériques. Intégrer l'identité de marque du client tout en l'insufflant à une approche contemporaine et innovante. Des réponses favorables de la part des participants ont été obtenues, ce qui a donné lieu à un événement réussi avec un engagement accru des participants et une meilleure visibilité de la marque.",
+    "code_review_powered_by": "Code review propulsé par"
+  },
+  "SignIn": {
+    "meta_title": "Se connecter",
+    "meta_description": "Connectez-vous à votre compte avec facilité."
+  },
+  "SignUp": {
+    "meta_title": "S'inscrire",
+    "meta_description": "Créez un compte facilement grâce à notre processus d'inscription intuitif."
+  },
+  "Dashboard": {
+    "meta_title": "Tableau de bord",
+    "hello_message": "Bonjour {email}!",
+    "alternative_message": "Vous voulez créer votre SaaS plus rapidement en utilisant la même stack ? Essayez <url></url>."
+  },
+  "UserProfile": {
+    "meta_title": "Profil de l'utilisateur"
+  },
+  "DashboardLayout": {
+    "dashboard_link": "Tableau de bord",
+    "user_profile_link": "Gérer votre compte",
+    "sign_out": "Se déconnecter"
+  },
+  "Questionnaire": {
+    "text_yes": "Ja",
+    "text_no": "Nein",
+    "text_camt": "Nein, da Camt.053",
+    "step1": {
+      "title": "User Accounts",
+      "description": "Erfassung der Anmeldedaten für Ihre(n) NextCloud Account(s): ",
+      "field": {
+        "firstname": {
+          "label": "Vorname"
+        },
+        "lastname": {
+          "label": "Nachname"
+        },
+        "email": {
+          "label": "Email Adresse"
+        },
+        "operatingSystem": {
+          "description": "Mit welchem Betriebssystem arbeiten Sie hauptsächlich?"
+        }
+      }
+    },
+    "step2": {
+      "title": "Ausgangsrechnungen",
+      "description": "Rechnungen, die vom Unternehmen an Kunden ausgestellt werden."
+    },
+    "step3": {
+      "title": "Verbindlichkeiten",
+      "fields": {
+        "incomingInvoices": {
+          "label": "Eingangsrechnungen",
+          "description": "Rechnungen die das Unternehmen üblicherweise per Mail, oder per Post erhält und die typischerweise per Überweisung vom Firmenkonto bezahlt werden."
+        },
+        "recurringBills": {
+          "label": "Dauerrechnungen",
+          "description": "Jene Rechnungen, die das Unternehmen vom Lieferanten erhält und über einen längeren Zeitraum gültig sind. zB Miete/Reinigungspauschale die für das gesamte Jahr vorgeschrieben, jedoch mtl. bezahlt wird."
+        }
+      }
+    },
+    "step4": {
+      "title": "Bank",
+      "description": "Jene Kontoauszüge die digital von der Bank heruntergeladen werden können. Mögliche Formate: PDF oder Camt.053 Datei<br/><br/><br/>Hinweis: Es müssen keine Bank-Dateien in die NextCloud hochgeladen werden, wenn die ABG die Camt.053 Dateien direkt vom Kreditinstitut bezieht. Hierfür ist eine Berechtigung des Unternehmens notwendig."
+    },
+    "step5": {
+      "title": "Ablage",
+      "description": "In die Ablage kommen jene Dokumente, die nicht zu den anderen genannten Ordnern passen (zB Versicherungspolizzen, Kaufverträge, etc).",
+      "fields": {
+        "dynamicCheckboxDropdown": {
+          "label": "Weitere Kategorien",
+          "options": {
+            "purchaseContract": "Kaufverträge",
+            "loanAgreement": "Darlehensverträge",
+            "leasingContract": "Leasingverträge",
+            "insurancePolicy": "Kaufverträge"
+          },
+          "extraOptions": {
+            "saleAgreement": "Verkaufsvertrag",
+            "indemnityAgreement": "Entschädigungsvereinbarungen",
+            "mortgageAgreement": "Hypothekenverträge"
+          }
+        }
+      }
+    },
+    "step6": {
+      "title": "Lohnverrechnung",
+      "description": "Wenn Mitarbeiter im Unternehmen vorhanden sind und eine Lohnverrechnung geführt wird, können jene Daten für An & Abmeldungen bzw. sonstige Änderungen die Ihre Mitarbeiter betreffen an die Lohnverrechnung via NextCloud übermittelt werden.<br/><br/>Möchte das Unternehmen für die Übermittlung der Daten für An- & Abmeldung bzw Änderungen Ihrer Mitarbeiter die NextCloud nutzen?"
+    },
+    "step7": {
+      "title": "HV-Abrechnungen",
+      "description": "Werden vom Unternehmen vermietete Wohnungen durch eine Hausverwaltung ganzheitlich betreut, sind jene Unterlagen von der Hausverwaltung in diesen Ordner abzulegen (zB monatliche Hauseigentümer-Abrechnungen, Betriebskosten-Abrechnungen und sonstige von der Hausverwaltung übermittelte Unterlagen)."
+    },
+    "step8": {
+      "title": "Barauslagen",
+      "description": "Rechnungen, die der Unternehmer (und/oder ein Mitarbeiter) im Geschäft/Lokal privat bezahlt oder sonstige Barauslagen, die das Unternehmen betreffen und vom Unternehmen zurückerstattet werden."
+    },
+    "step9": {
+      "title": "Kreditkartenabrechnung",
+      "description": "Rechnungen, die per Kreditkarte bezahlt werden, bzw. Online-Bestellungen, die über die Kreditkarte abgewickelt wurden. Kreditkartenabrechnung & zugehörige Rechnungen sind immer in den jeweiligen Unterordnern (nach Abrechnungszeitraum) abzuspeichern."
+    },
+    "step10": {
+      "description": "'Monatlicher Auszug des PayPal-Kontos.<br/><br/>Hinweis: Falls das PayPal-Konto mit einem Bankkonto verknüpft ist, sollten ER im Ordner „Eingangsrechnungen“ abgespeichert werden. Falls das PayPal-Konto mit einer Kreditkarte verknüpft ist, sollten ER im richtigen Kreditkartenunterordner abgespeichert werden.'"
+    },
+    "step11": {
+      "title": "Kassa",
+      "description": "Wenn eine Kassa (Handkasse/Registrierkasse) vorhanden ist muss bitte ein monatliches Kassabuch + zugehörige Belege, die im Kassabuch angeführt sind, hochgeladen werden."
+    },
+    "step12": {
+      "title": "Inventur",
+      "description": "Schriftliche Aufstellung aller Vorräte (zB Waren) nach Art, Menge und Wert die auf Lager liegen. (mind. 1x im Jahr erforderlich, zum Ende eines jeden Jahres)."
+    }
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "RootLayout": {
+    "home_link": "Home",
+    "about_link": "About",
+    "counter_link": "Counter",
+    "portfolio_link": "Portfolio",
+    "sign_in_link": "Sign in",
+    "sign_up_link": "Sign up"
+  },
+  "BaseTemplate": {
+    "description": "Starter code for your Nextjs Boilerplate with Tailwind CSS",
+    "made_with": "Made with <author></author>."
+  },
+  "Index": {
+    "meta_title": "Next.js Boilerplate Presentation",
+    "meta_description": "Next js Boilerplate is the perfect starter code for your project. Build your React application with the Next.js framework.",
+    "sponsors_title": "Sponsors"
+  },
+  "Counter": {
+    "meta_title": "Counter",
+    "meta_description": "An example of DB operation",
+    "loading_counter": "Loading counter...",
+    "security_powered_by": "Security, bot detection and rate limiting powered by"
+  },
+  "CounterForm": {
+    "presentation": "The counter is stored in the database and incremented by the value you provide.",
+    "label_increment": "Increment by",
+    "button_increment": "Increment"
+  },
+  "CurrentCount": {
+    "count": "Count: {count}"
+  },
+  "About": {
+    "meta_title": "About",
+    "meta_description": "About page description",
+    "about_paragraph": "Welcome to our About page! We are a team of passionate individuals dedicated to creating amazing software.",
+    "translation_powered_by": "Translation powered by"
+  },
+  "Portfolio": {
+    "meta_title": "Portfolio",
+    "meta_description": "Welcome to my portfolio page!",
+    "presentation": "Welcome to my portfolio page! Here you will find a carefully curated collection of my work and accomplishments. Through this portfolio, I'm to showcase my expertise, creativity, and the value I can bring to your projects.",
+    "portfolio_name": "Portfolio {name}",
+    "error_reporting_powered_by": "Error reporting powered by",
+    "coverage_powered_by": "Code coverage powered by"
+  },
+  "PortfolioSlug": {
+    "meta_title": "Portfolio {slug}",
+    "meta_description": "Portfolio {slug} description",
+    "header": "Portfolio {slug}",
+    "content": "Created a set of promotional materials and branding elements for a corporate event. Crafted a visually unified theme, encompassing a logo, posters, banners, and digital assets. Integrated the client's brand identity while infusing it with a contemporary and innovative approach. Garnered favorable responses from event attendees, resulting in a successful event with heightened participant engagement and increased brand visibility.",
+    "code_review_powered_by": "Code review powered by"
+  },
+  "SignIn": {
+    "meta_title": "Sign in",
+    "meta_description": "Seamlessly sign in to your account with our user-friendly login process."
+  },
+  "SignUp": {
+    "meta_title": "Sign up",
+    "meta_description": "Effortlessly create an account through our intuitive sign-up process."
+  },
+  "Dashboard": {
+    "meta_title": "Dashboard",
+    "hello_message": "Hello {email}!",
+    "alternative_message": "Want to build your SaaS faster using the same stack? Try <url></url>."
+  },
+  "UserProfile": {
+    "meta_title": "User Profile"
+  },
+  "DashboardLayout": {
+    "dashboard_link": "Dashboard",
+    "user_profile_link": "Manage your account",
+    "sign_out": "Sign out"
+  },
+  "Questionnaire": {
+    "text_yes": "Yes",
+    "text_no": "No",
+    "text_camt": "No, because Camt.053",
+    "step1": {
+      "title": "Account",
+      "description": "Provide your personal details and select your operating system.",
+      "field": {
+        "firstname": {
+          "label": "First Name"
+        },
+        "lastname": {
+          "label": "Last Name"
+        },
+        "email": {
+          "label": "Email Address"
+        },
+        "operatingSystem": {
+          "description": "Which operating system do you mainly work with?"
+        }
+      }
+    },
+    "step2": {
+      "title": "Outgoing Invoices",
+      "description": "Invoices issued by the company to customers."
+    },
+    "step3": {
+      "title": "Liabilities",
+      "fields": {
+        "incomingInvoices": {
+          "label": "Incoming invoices",
+          "description": "Invoices that the company usually receives by email or post and which are typically paid by bank transfer from the company account."
+        },
+        "recurringBills": {
+          "label": "Recurring bills",
+          "description": "Invoices that the company receives from suppliers and are valid for a longer period of time. For example, rent/cleaning fees that are charged for the entire year but are paid monthly."
+        }
+      }
+    },
+    "step4": {
+      "title": "Bank",
+      "description": "Those bank statements that can be downloaded digitally from the bank. Possible formats: PDF or Camt.053 file.<br/><br/><br/>Note: Bank files do not need to be uploaded to NextCloud if ABG obtains the Camt.053 files directly from the bank. Company authorization is required for this."
+    },
+    "step5": {
+      "title": "Filing",
+      "description": "The filing system contains those documents that do not fit into the other folders mentioned (e.g. insurance policies, purchase contracts, etc.).",
+      "fields": {
+        "dynamicCheckboxDropdown": {
+          "label": "More categories",
+          "options": {
+            "purchaseContract": "Purchase Contract",
+            "loanAgreement": "Loan Agreement",
+            "leasingContract": "Leasing Contract",
+            "insurancePolicy": "Insurance Policy"
+          },
+          "extraOptions": {
+            "saleAgreement": "Sale Agreement",
+            "indemnityAgreement": "Indemnity Agreement",
+            "mortgageAgreement": "Mortgage Agreement"
+          }
+        }
+      }
+    },
+    "step6": {
+      "title": "Payroll Accounting",
+      "description": "If the company has employees and a payroll system is in place, the data for registrations and deregistrations or other changes that affect your employees can be transmitted to the payroll system via NextCloud.<br/><br/>Does the company want to use NextCloud to transmit the data for registrations and deregistrations or changes to your employees?"
+    },
+    "step7": {
+      "title": "General Billing",
+      "description": "If apartments rented by the company are managed holistically by a property management company, the documents from the property management company must be filed in this folder (e.g. monthly property owner statements, operating cost statements and other documents submitted by the property management company)."
+    },
+    "step8": {
+      "title": "Cash expenses",
+      "description": "Bills paid privately by the business owner (and/or an employee) in the store/restaurant, or other cash expenses related to the business that are reimbursed by the business."
+    },
+    "step9": {
+      "title": "Credit Card",
+      "description": "Invoices paid by credit card or online orders processed using the credit card. Credit card statements and associated invoices should always be saved in the respective subfolders (according to the billing period)."
+    },
+    "step10": {
+      "description": "Monthly PayPal account statement.<br/><br/>Note: If the PayPal account is linked to a bank account, it should be saved in the 'Incoming Invoices' folder. If the PayPal account is linked to a credit card, it should be saved in the correct credit card subfolder."
+    },
+    "step11": {
+      "title": "Cash Register",
+      "description": "If a cash register (hand cash register/cash register) is available, please upload a monthly cash book + associated receipts listed in the cash book."
+    },
+    "step12": {
+      "title": "Inventory",
+      "description": "A written list of all inventories (e.g., goods) in stock, broken down by type, quantity, and value. (Required at least once a year, at the end of each year)."
+    }
+  }
+}
