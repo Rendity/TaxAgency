@@ -1,3 +1,10 @@
+# 1.0.0 (2025-05-03)
+
+
+### Features
+
+* initial setup ([20a44a4](https://github.com/Rendity/TaxAgency/commit/20a44a402d4aeccb9949327fbe7ab50634a66b70))
+
 ## [3.66.3](https://github.com/ixartz/Next-js-Boilerplate/compare/v3.66.2...v3.66.3) (2025-04-25)
 
 
