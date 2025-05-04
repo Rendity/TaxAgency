@@ -9,7 +9,7 @@
   },
   "BaseTemplate": {
     "description": "Startercode für Ihren nächsten Js -Boilerplate mit Rückenwind -CSS",
-    "made_with": "Fait avec <author></author>."
+    "made_with": "<author></author>."
   },
   "Index": {
     "meta_title": "Weiter.js Boilerplate -Präsentation",
@@ -99,7 +99,7 @@
       "description": "Rechnungen, die vom Unternehmen an Kunden ausgestellt werden."
     },
     "step3": {
-      "title": "Verbindlichkeiten",
+      "title": "Eingangsrechnungen",
       "fields": {
         "incomingInvoices": {
           "label": "Eingangsrechnungen",
@@ -125,7 +125,7 @@
             "purchaseContract": "Kaufverträge",
             "loanAgreement": "Darlehensverträge",
             "leasingContract": "Leasingverträge",
-            "insurancePolicy": "Kaufverträge"
+            "insurancePolicy": "Versicherungspolizzen"
           },
           "extraOptions": {
             "saleAgreement": "Verkaufsvertrag",

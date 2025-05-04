@@ -17,7 +17,7 @@ const Review: FC<Props> = ({ steps, onSubmit, isSubmitting }) => {
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      <h3 className="text-2xl font-semibold">Review Your Answers</h3>
+      <h3 className="text-2xl font-semibold">Überprüfen Sie Ihre Antworten</h3>
 
       <div className="space-y-8">
         {steps.map((step, stepIdx) => (
@@ -79,7 +79,7 @@ const Review: FC<Props> = ({ steps, onSubmit, isSubmitting }) => {
         className="w-full py-3 mt-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Submitting...' : 'Submit'}
+        {isSubmitting ? 'Senden...' : 'Abschicken'}
       </button>
     </form>
   );

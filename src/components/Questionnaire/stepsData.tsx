@@ -15,11 +15,11 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
           label: t('step1.field.firstname.label'),
           name: 'firstName',
           type: 'text',
-          description: 'Enter your given name.',
+          description: 'Geben Sie Ihren Vornamen ein.',
           validation: {
-            required: { value: true, message: 'First Name is required' },
-            minLength: { value: 2, message: `Minimum length is 10` },
-            maxLength: { value: 30, message: `Maximum length is 30` },
+            required: { value: true, message: 'Vorname ist erforderlich' },
+            minLength: { value: 2, message: `Minimale Länge ist 10` },
+            maxLength: { value: 30, message: `Maximale Länge ist 30` },
           },
         },
         {
@@ -28,9 +28,9 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
           type: 'text',
           description: 'Enter your family name.',
           validation: {
-            required: { value: true, message: 'First Name is required' },
-            minLength: { value: 2, message: `Minimum length is 10` },
-            maxLength: { value: 30, message: `Maximum length is 30` },
+            required: { value: true, message: 'Vorname ist erforderlich' },
+            minLength: { value: 2, message: `Minimale Länge ist 10` },
+            maxLength: { value: 30, message: `Maximale Länge ist 30` },
           },
         },
         {
@@ -40,7 +40,7 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
           description: 'We will contact you through this email.',
         },
         {
-          label: 'Operating System',
+          label: 'Betriebssystem',
           name: 'operatingSystem',
           type: 'radio',
           options: [
@@ -57,7 +57,7 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
       description: t('step2.description'),
       fields: [
         {
-          label: 'Outgoing Invoices',
+          label: 'Ausgangsrechnungen',
           name: 'outgoingInvoices',
           type: 'radio',
           options: [
@@ -107,7 +107,7 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
           description: '',
         },
         {
-          label: 'IBAN File Format',
+          label: 'IBAN Format',
           name: 'bankFileObtain',
           type: 'radio',
           options: [
@@ -147,7 +147,7 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
       description: t('step6.description'),
       fields: [
         {
-          label: 'Accounting applied?',
+          label: 'Lohnverrechnung',
           name: 'payrollAccounting',
           type: 'radio',
           options: [
@@ -163,7 +163,7 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
       description: t('step7.description'),
       fields: [
         {
-          label: 'General Billing Management?',
+          label: 'HV-Abrechnungen',
           name: 'agmSettlements',
           type: 'radio',
           options: [
@@ -193,13 +193,13 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
       fields: [
         {
           label:
-          'Credit Card',
+          'Kreditkarte',
           name: 'creditCards',
           type: 'creditcard',
           description: 'Enter your credit card details.',
         },
         {
-          label: 'Credit Card File Format',
+          label: 'Kreditkarten Format',
           name: 'ccFileObtain',
           type: 'radio',
           options: [
@@ -232,7 +232,7 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
       description: t('step11.description'),
       fields: [
         {
-          label: 'Cash Register used?',
+          label: 'Kassa',
           name: 'cashDesk',
           type: 'radio',
           options: [
@@ -248,7 +248,7 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
       description: t('step12.description'),
       fields: [
         {
-          label: 'Inventory management?',
+          label: 'Inventur',
           name: 'inventory',
           type: 'radio',
           options: [

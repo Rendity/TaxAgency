@@ -34,7 +34,7 @@ export const PersonField = ({ index, value, register, errors, onChange, onClick 
             htmlFor={`person_firstname_${idx}`}
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4"
           >
-            First Name
+            Vorname
           </label>
           {errors?.person?.[idx]?.firstName && (
             <p className="text-sm text-red-500 mt-1">{errors.person[idx].firstName.message}</p>
@@ -57,7 +57,7 @@ export const PersonField = ({ index, value, register, errors, onChange, onClick 
             htmlFor={`person_lastname_${idx}`}
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4"
           >
-            Last Name
+            Nachname
           </label>
           {errors?.person?.[idx]?.lastName && (
             <p className="text-sm text-red-500 mt-1">{errors.person[idx].lastName.message}</p>
