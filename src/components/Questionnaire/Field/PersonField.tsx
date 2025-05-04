@@ -69,7 +69,7 @@ export const PersonField = ({ index, value, register, errors, onChange, onClick 
           type="button"
           onClick={() => onClick(idx)}
           className="absolute right-0 top-6 px-3 py-1.5 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600"
-          label="Remove"
+          label="Löschen"
         />
       </div>
     </div>

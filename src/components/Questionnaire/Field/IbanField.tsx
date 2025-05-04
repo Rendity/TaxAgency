@@ -43,7 +43,7 @@ export const IBANField = ({ index, value, errors, register, onChange, onClick }:
           type="button"
           onClick={() => onClick(index)}
           className="absolute right-2 top-6 -translate-y-1/2 px-3 py-1.5 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600"
-          label="Remove"
+          label="Löschen"
         />
       </div>
       {errors?.ibans?.[index] && (
