@@ -12,42 +12,49 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
       description: t('step1.description'),
       fields: [
         {
-          label: t('step1.field.firstname.label'),
-          name: 'firstName',
-          type: 'text',
-          description: 'Geben Sie Ihren Vornamen ein.',
-          validation: {
-            required: { value: true, message: 'Vorname ist erforderlich' },
-            minLength: { value: 2, message: `Minimale Länge ist 10` },
-            maxLength: { value: 30, message: `Maximale Länge ist 30` },
-          },
-        },
-        {
-          label: t('step1.field.lastname.label'),
-          name: 'lastName',
-          type: 'text',
-          description: 'Enter your family name.',
-          validation: {
-            required: { value: true, message: 'Vorname ist erforderlich' },
-            minLength: { value: 2, message: `Minimale Länge ist 10` },
-            maxLength: { value: 30, message: `Maximale Länge ist 30` },
-          },
-        },
-        {
-          label: t('step1.field.email.label'),
-          name: 'email',
-          type: 'email',
-          description: 'We will contact you through this email.',
-        },
-        {
-          label: 'Betriebssystem',
-          name: 'operatingSystem',
-          type: 'radio',
-          options: [
-            { label: 'Windows', value: 'windows' },
-            { label: 'Mac OS', value: 'macos' },
+          label: t('step1.title'),
+          name: 'accounts',
+          type: 'person',
+          fields: [
+            {
+              label: t('step1.field.firstname.label'),
+              name: 'firstName',
+              type: 'text',
+              description: 'Geben Sie Ihren Vornamen ein.',
+              validation: {
+                required: { value: true, message: 'Vorname ist erforderlich' },
+                minLength: { value: 2, message: `Minimale Länge ist 10` },
+                maxLength: { value: 30, message: `Maximale Länge ist 30` },
+              },
+            },
+            {
+              label: t('step1.field.lastname.label'),
+              name: 'lastName',
+              type: 'text',
+              description: 'Enter your family name.',
+              validation: {
+                required: { value: true, message: 'Vorname ist erforderlich' },
+                minLength: { value: 2, message: `Minimale Länge ist 10` },
+                maxLength: { value: 30, message: `Maximale Länge ist 30` },
+              },
+            },
+            {
+              label: t('step1.field.email.label'),
+              name: 'email',
+              type: 'email',
+              description: 'We will contact you through this email.',
+            },
+            {
+              label: 'Betriebssystem',
+              name: 'operatingSystem',
+              type: 'radio',
+              options: [
+                { label: 'Windows', value: 'windows' },
+                { label: 'Mac OS', value: 'macos' },
+              ],
+              description: t('step1.field.operatingSystem.description'),
+            },
           ],
-          description: t('step1.field.operatingSystem.description'),
         },
       ],
     },
@@ -101,12 +108,6 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
       description: t('step4.description'),
       fields: [
         {
-          label: 'IBAN',
-          name: 'ibans',
-          type: 'iban',
-          description: '',
-        },
-        {
           label: 'IBAN Format',
           name: 'bankFileObtain',
           type: 'radio',
@@ -115,6 +116,12 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
             { label: t('text_no'), value: 'No' },
             { label: t('text_camt'), value: 'camt' },
           ],
+        },
+        {
+          label: 'IBAN',
+          name: 'ibans',
+          type: 'iban',
+          description: '',
         },
       ],
     },
@@ -126,7 +133,7 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
         {
           label: t('step5.fields.dynamicCheckboxDropdown.label'),
           name: 'filingCategories',
-          type: 'dynamicCheckboxDropdown',
+          type: 'multiCheckbox',
           options: [
             { label: t('step5.fields.dynamicCheckboxDropdown.options.purchaseContract'), value: 'purchaseContract' },
             { label: t('step5.fields.dynamicCheckboxDropdown.options.loanAgreement'), value: 'loanAgreement' },
@@ -183,6 +190,30 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
           name: 'person',
           type: 'person',
           description: '',
+          fields: [
+            {
+              label: t('step1.field.firstname.label'),
+              name: 'firstName',
+              type: 'text',
+              description: 'Geben Sie Ihren Vornamen ein.',
+              validation: {
+                required: { value: true, message: 'Vorname ist erforderlich' },
+                minLength: { value: 2, message: `Minimale Länge ist 10` },
+                maxLength: { value: 30, message: `Maximale Länge ist 30` },
+              },
+            },
+            {
+              label: t('step1.field.lastname.label'),
+              name: 'lastName',
+              type: 'text',
+              description: 'Enter your family name.',
+              validation: {
+                required: { value: true, message: 'Vorname ist erforderlich' },
+                minLength: { value: 2, message: `Minimale Länge ist 10` },
+                maxLength: { value: 30, message: `Maximale Länge ist 30` },
+              },
+            },
+          ],
         },
       ],
     },
@@ -192,13 +223,6 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
       description: t('step9.description'),
       fields: [
         {
-          label:
-          'Kreditkarte',
-          name: 'creditCards',
-          type: 'creditcard',
-          description: 'Enter your credit card details.',
-        },
-        {
           label: 'Kreditkarten Format',
           name: 'ccFileObtain',
           type: 'radio',
@@ -207,6 +231,13 @@ export const getStepsData = async (locale: string): Promise<Step[]> => {
             { label: t('text_no'), value: 'No' },
             { label: t('text_camt'), value: 'camt' },
           ],
+        },
+        {
+          label:
+          'Kreditkarte',
+          name: 'creditCards',
+          type: 'creditcard',
+          description: 'Enter your credit card details.',
         },
       ],
     },

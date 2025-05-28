@@ -81,7 +81,13 @@ export default async function middleware(
   // Allow direct access to sitemap.xml and robots.txt without i18n middleware processing
   // This ensures these files are properly served for SEO purposes
   // Related to GitHub issue: https://github.com/ixartz/Next-js-Boilerplate/issues/356
-  if (path === '/sitemap.xml' || path === '/robots.txt') {
+  // ✅ Skip next-intl for API routes and static files
+  if (
+    path.startsWith('/api')
+    || path.startsWith('/trpc')
+    || path === '/sitemap.xml'
+    || path === '/robots.txt'
+  ) {
     return NextResponse.next();
   }
 

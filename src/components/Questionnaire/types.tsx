@@ -8,7 +8,7 @@ export type FieldType =
   | 'iban'
   | 'creditcard'
   | 'person'
-  | 'dynamicCheckboxDropdown';
+  | 'multiCheckbox';
 
 export type ButtonType = {
   type: 'button' | 'submit' | 'reset';
@@ -56,6 +56,7 @@ export type Field = {
   placeholder?: string;
   defaultValue?: string | number | boolean;
   options?: OptionType[];
+  fields?: Field[];
   extraOptions?: OptionType[];
   description?: string;
   validation?: ValidationRules;
@@ -93,6 +94,7 @@ export type StepFormProps = {
 export type FieldRendererProps = {
   field: Field;
   value: any;
+  uniqueName?: string;
   register: any;
   errors: any;
   onChange: (value: any) => void;

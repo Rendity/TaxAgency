@@ -49,3 +49,19 @@ export const isValidCreditCard = (number: string) => {
 
   return sum % 10 === 0;
 };
+
+export function formatIban(value: string) {
+  return value
+    .toUpperCase() // Capitalize letters
+    .replace(/\s+/g, '') // Remove existing spaces
+    .replace(/(.{4})/g, '$1 ') // Add space every 4 characters
+    .trim();
+}
+
+export const formatCreditCard = (value: string) => {
+  // Remove non-digit characters
+  const cleaned = value.replace(/\D+/g, '');
+
+  // Format the card number in groups of 4 digits (e.g., 1234 5678 9012 3456)
+  return cleaned.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+};

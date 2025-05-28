@@ -1,14 +1,17 @@
 import type { FieldRendererProps } from './types';
 import React from 'react';
-import { DynamicCheckboxDropdownField } from './Field/DynamicCheckbox';
-import RadioField from './Field/RadioField';
-import { RepeatField } from './Field/RepeatField';
-import TextField from './Field/TextField';
+import { CreditCardField } from './Fields/CreditCard';
+import { DynamicCheckboxDropdownField } from './Fields/DynamicCheckbox';
+import { IBANField } from './Fields/IBAN';
+import { PersonField } from './Fields/PersonField';
+import RadioField from './Fields/RadioField';
+import TextField from './Fields/TextField';
 
 export default function FieldRenderer({
   field,
   value,
   register,
+  uniqueName,
   errors,
   onChange,
 }: FieldRendererProps) {
@@ -21,16 +24,27 @@ export default function FieldRenderer({
       'w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
   };
 
-  // 🆕 NEW: handle special dynamic checkbox+dropdown
-  if (field.type === 'dynamicCheckboxDropdown') {
-    return <DynamicCheckboxDropdownField field={field} value={value} register={register} errors={errors} onChange={onChange} />;
-  }
-  // 🆕 NEW: handle special dynamic checkbox+dropdown
-  if (field.type === 'person' || field.type === 'iban' || field.type === 'creditcard') {
-    return <RepeatField field={field} value={value} register={register} errors={errors} onChange={onChange} />;
-  }
-
   switch (field.type) {
+    case 'multiCheckbox':
+      return (
+        <DynamicCheckboxDropdownField field={field} value={value} register={register} errors={errors} onChange={onChange} />
+      );
+    case 'person':
+      return (
+        <PersonField fields={field.fields ?? []} name={field.name} />
+      );
+    case 'iban':
+      return (
+        <IBANField
+          name={field.name}
+        />
+      );
+    case 'creditcard':
+      return (
+        <CreditCardField
+          name={field.name}
+        />
+      );
     case 'text':
     case 'email':
       return (
@@ -51,7 +65,7 @@ export default function FieldRenderer({
             <RadioField
               label={opt.label}
               key={`bordered-radio-${opt.value}`}
-              name={field.name}
+              name={uniqueName ?? field.name}
               value={opt.value}
               checked={value === opt.value}
               onChange={onChange}
@@ -61,6 +75,15 @@ export default function FieldRenderer({
       );
 
     default:
-      return <input type="text" {...commonProps} />;
+      return (
+        <TextField
+          disabled={false}
+          name={field.name}
+          key={`${field.type}-${field.name}`}
+          label={field.label}
+          {...commonProps}
+          type={field.type}
+        />
+      );
   }
 }

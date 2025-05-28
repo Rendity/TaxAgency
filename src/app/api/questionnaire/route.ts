@@ -111,8 +111,8 @@ export async function GET(_req: NextRequest) {
 }
 export async function POST(req: NextRequest) {
   try {
-    if (req.body?.cancel) {
-      const body = await req.json();
+    const body = await req.json();
+    if (body.data) {
       const data = extendedSchema.parse(body) as z.infer<typeof extendedSchema>;
       const username = data.email;
       const parentFolder = `${data.clientId}-${data.companyName.replace(/\s+/g, '_')}`;
@@ -195,6 +195,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, created: new Date().toISOString() });
   } catch (err: any) {
     console.error('Submit error:', err);
-    return NextResponse.json({ message: err.message || 'Submission failed' }, { status: 400 });
+    return NextResponse.json({ message: 'Submission failed' }, { status: 400 });
   }
 }

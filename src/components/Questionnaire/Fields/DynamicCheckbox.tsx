@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
 import type { FieldRendererProps } from '../types';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export const DynamicCheckboxDropdownField = ({
   field,
@@ -8,16 +8,18 @@ export const DynamicCheckboxDropdownField = ({
   onChange,
 }: FieldRendererProps) => {
   const fixedOptions = field.options || [];
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const extraOptions = field.extraOptions || [];
+  const extraOptions = useMemo(() => field.extraOptions || [], [field.extraOptions]);
 
   const [selectedValues, setSelectedValues] = useState<string[]>(() =>
     Array.isArray(value) ? value : [],
   );
-
   const [availableExtraOptions, setAvailableExtraOptions] = useState(() =>
     extraOptions.filter(opt => !selectedValues.includes(opt.value)),
   );
+  const [customInput, setCustomInput] = useState('');
+  const [showCustomInput, setShowCustomInput] = useState(false);
+
+  const OTHER_OPTION_VALUE = '__other__';
 
   useEffect(() => {
     if (Array.isArray(value)) {
@@ -29,6 +31,11 @@ export const DynamicCheckboxDropdownField = ({
   }, [value, extraOptions]);
 
   const handleSelect = (selectedValue: string) => {
+    if (selectedValue === OTHER_OPTION_VALUE) {
+      setShowCustomInput(true);
+      return;
+    }
+
     const updated = [...selectedValues, selectedValue];
     setSelectedValues(updated);
     setAvailableExtraOptions(prev =>
@@ -56,7 +63,20 @@ export const DynamicCheckboxDropdownField = ({
     }
 
     setSelectedValues(updatedSelected);
-    onChange(updatedSelected); // trigger validation
+    onChange(updatedSelected);
+  };
+
+  const handleAddCustom = () => {
+    const trimmed = customInput.trim();
+    if (!trimmed || selectedValues.includes(trimmed)) {
+      return;
+    }
+
+    const updated = [...selectedValues, trimmed];
+    setSelectedValues(updated);
+    onChange(updated);
+    setCustomInput('');
+    setShowCustomInput(false);
   };
 
   return (
@@ -76,29 +96,61 @@ export const DynamicCheckboxDropdownField = ({
             </div>
           ),
         )}
+
+        {/* Custom user-added values as checkboxes */}
+        {selectedValues
+          .filter(
+            val =>
+              !fixedOptions.some(opt => opt.value === val)
+              && !extraOptions.some(opt => opt.value === val),
+          )
+          .map(val => (
+            <div key={val} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={true}
+                onChange={() => handleCheckboxChange(val)}
+              />
+              <label>{val}</label>
+            </div>
+          ))}
       </div>
 
-      {/* Dropdown */}
-      {availableExtraOptions.length > 0 && (
-        <select
-          value=""
-          onChange={(e) => {
-            const val = e.target.value;
-            if (val) {
-              handleSelect(val);
-            }
-          }}
-          className="p-2 border rounded-md"
-        >
-          <option value="" disabled>
-            {field.label || 'Add more options...'}
+      {/* Always show dropdown */}
+      <select
+        value=""
+        onChange={e => handleSelect(e.target.value)}
+        className="p-2 border rounded-md"
+      >
+        <option value="" disabled>
+          {field.label || 'Add more options...'}
+        </option>
+        {availableExtraOptions.map(opt => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
           </option>
-          {availableExtraOptions.map(opt => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+        ))}
+        <option value={OTHER_OPTION_VALUE}>Other</option>
+      </select>
+
+      {/* Input for Other */}
+      {showCustomInput && (
+        <div className="flex items-center space-x-2">
+          <input
+            type="text"
+            value={customInput}
+            onChange={e => setCustomInput(e.target.value)}
+            placeholder="Enter custom option"
+            className="p-2 border rounded-md"
+          />
+          <button
+            type="button"
+            onClick={handleAddCustom}
+            className="px-3 py-2 bg-blue-500 text-white rounded"
+          >
+            Add
+          </button>
+        </div>
       )}
     </div>
   );

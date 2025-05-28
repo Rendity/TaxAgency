@@ -18,8 +18,57 @@ export default function Questionnaire({ steps, client, company }: QuestionnaireP
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const methods = useForm({
-    mode: 'onChange',
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      accounts: [{
+        firstName: 'Shahbaz Ali Khan',
+        lastName: 'Imrani',
+        email: 'shahbaz.pk@gmail.com',
+        operatingSystem: 'windows',
+      }, {
+        firstName: 'Habib Ali Khan',
+        lastName: 'Imrani',
+        email: 'habib.pk@gmail.com',
+        operatingSystem: 'macos',
+      }],
+      outgoingInvoices: 'Yes',
+      incomingInvoices: 'Yes',
+      recurringBills: 'Yes',
+      bankFileObtain: 'Yes',
+      ibans: [
+        {
+          value: 'DE89370400440532013000',
+        },
+        {
+          value: 'DE89370400440532013001',
+        },
+      ],
+      filingCategories: ['Pakistan', 'India', 'USA', 'Germany'],
+      payrollAccounting: 'Yes',
+      agmSettlements: 'Yes',
+      person: [
+        {
+          firstName: 'Mahboob Ali Khan',
+          lastName: 'Imrani',
+        },
+        {
+          firstName: 'Mansoor Ali Khan',
+          lastName: 'Imrani',
+        },
+      ],
+      ccFileObtain: 'Yes',
+      creditCards: [
+        {
+          value: '1234 5678 9012 3456',
+        },
+        {
+          value: '9876 5432 1098 7654',
+        },
+      ],
+      paypal: 'Yes',
+      cashDesk: 'Yes',
+      inventory: 'Yes',
+    },
   });
 
   const {
@@ -35,8 +84,13 @@ export default function Questionnaire({ steps, client, company }: QuestionnaireP
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
-      data.ibans = data.ibans.map((iban: string) => iban.replace(/\s+/g, ''));
-      data.creditCards = data.creditCards.map((card: string) => card.replace(/\s+/g, ''));
+      // data.ibans = data.ibans.map((iban: string) => iban.replace(/\s+/g, ''));
+      data.creditCards = data.creditCards?.map((card: { value: string }) => ({
+        value: card.value.replace(/\s+/g, ''),
+      }));
+      data.ibans = data.ibans?.map((card: { value: string }) => ({
+        value: card.value.replace(/\s+/g, ''),
+      }));
       const response = await fetch('/api/questionnaire', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -57,7 +111,8 @@ export default function Questionnaire({ steps, client, company }: QuestionnaireP
   };
 
   const nextStep = async () => {
-    const valid = await trigger(steps[currentStep]?.fields.map((f: Field) => f.name) as (keyof typeof formSchema.shape)[]); // Validate current fields
+    const fieldName = steps[currentStep]?.fields.map((f: Field) => f.name) as (keyof typeof formSchema._def.schema.shape)[];
+    const valid = await trigger(fieldName); // Validate current fields
     if (valid) {
       const newStep = currentStep + 1;
       setCurrentStep(newStep);

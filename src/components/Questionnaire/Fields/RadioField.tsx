@@ -2,7 +2,9 @@ import type { RadioType } from '../types';
 
 export const RadioField = (radioField: RadioType) => {
   const { name, value, label, checked, onChange } = radioField;
-
+  const handleChange = () => {
+    onChange(value);
+  };
   return (
     <label
       htmlFor={`${name}-${value}`}
@@ -18,7 +20,7 @@ export const RadioField = (radioField: RadioType) => {
         name={name}
         value={value}
         checked={checked}
-        onChange={() => onChange(value)}
+        onChange={handleChange}
         className="w-5 h-5 accent-blue-600 cursor-pointer"
       />
       <span className="text-base font-medium">{label}</span>

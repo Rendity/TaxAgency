@@ -1,6 +1,5 @@
 /* eslint-disable react-dom/no-dangerously-set-innerhtml */
 import type { StepFormProps } from './types';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Controller } from 'react-hook-form';
 import FieldRenderer from './FieldRenderer';
 
@@ -68,35 +67,38 @@ export default function StepForm({
         ))}
       </div>
 
-      <div className="flex justify-between pt-8">
+      <div className="flex justify-between items-center pt-10">
+        {/* Previous Button */}
         <button
           type="button"
           onClick={onPrevious}
           disabled={isPreviousDisabled}
-          className={`
-            inline-flex items-center gap-2 px-6 py-2 rounded-full font-medium transition
+          className={`text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800
             ${isPreviousDisabled
-      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-      : 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400'}
-          `}
+      ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:hover:bg-gray-700 dark:focus:ring-gray-800'
+      : ''}
+            `}
         >
-          <ArrowLeft className="w-5 h-5" aria-hidden="true" />
-          Back
+          <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+            <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M13 5H1m0 0l4 4M1 5l4-4" />
+          </svg>
+          <span className="sr-only">Back</span>
         </button>
-
+        {/* Next Button */}
         <button
-          type="button"
           onClick={onNext}
           disabled={isNextDisabled}
-          className={`
-            inline-flex items-center gap-2 px-6 py-2 rounded-full font-medium transition
-            ${isNextDisabled
+          type="button"
+          className={`text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800
+          ${isNextDisabled
       ? 'bg-blue-100 text-blue-300 cursor-not-allowed'
-      : 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'}
-          `}
+      : ''}
+        `}
         >
-          Next
-          <ArrowRight className="w-5 h-5" aria-hidden="true" />
+          <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
+          </svg>
+          <span className="sr-only">Next</span>
         </button>
       </div>
     </div>
