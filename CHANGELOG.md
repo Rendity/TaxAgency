@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/Rendity/TaxAgency/compare/v1.0.0...v1.1.0) (2025-05-28)
+
+
+### Features
+
+* update questionnaire components and add new fields ([722ca44](https://github.com/Rendity/TaxAgency/commit/722ca44a4ab4eb3c528b43d01dd1e528fef5c243))
+
 # 1.0.0 (2025-05-03)
 
 
