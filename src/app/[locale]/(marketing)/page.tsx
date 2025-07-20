@@ -1,15 +1,16 @@
-import Questionnaire from '@/components/Questionnaire/index';
-import { getStepsData } from '@/components/Questionnaire/stepsData';
+import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import Questionnaire from '@/components/Questionnaire/index';
+import { getStepsData } from '@/components/Questionnaire/stepsData';
 
 type IIndexProps = {
   params: { locale: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 };
 
-export async function generateMetadata(props: IIndexProps) {
-  const { locale } = props.params;
+export async function generateMetadata(props: IIndexProps): Promise<Metadata> {
+  const { locale } = props.params ?? 'de';
   const t = await getTranslations({
     locale,
     namespace: 'Index',
@@ -22,10 +23,11 @@ export async function generateMetadata(props: IIndexProps) {
 }
 
 export default async function Index({ params, searchParams }: IIndexProps) {
-  const { locale } = params;
+  const { locale } = params ?? 'de';
 
   const client = searchParams?.client;
   const company = searchParams?.company;
+  const doubleEntry = searchParams?.doubleEntry === 'true' || false;
 
   const isValidClient = client && !Number.isNaN(Number(client));
   const isValidCompany = typeof company === 'string' && company.trim().length > 0;
@@ -35,12 +37,13 @@ export default async function Index({ params, searchParams }: IIndexProps) {
   }
 
   setRequestLocale(locale);
-  const steps = await getStepsData(locale);
+  const steps = await getStepsData(locale, doubleEntry);
 
   return (
     <Questionnaire
       client={Number(client)}
       company={String(company)}
+      doubleEntry={Boolean(doubleEntry)}
       steps={steps}
     />
   );

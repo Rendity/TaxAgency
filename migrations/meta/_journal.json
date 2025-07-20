@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1745518076143,
-      "tag": "0000_init-db",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1746240270728,
-      "tag": "0001_salty_talkback",
+      "when": 1752776050626,
+      "tag": "0000_misty_molten_man",
       "breakpoints": true
     }
   ]

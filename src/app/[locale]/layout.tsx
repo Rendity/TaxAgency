@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { PostHogProvider } from '@/components/analytics/PostHogProvider';
-import { routing } from '@/libs/i18nNavigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { PostHogProvider } from '@/components/analytics/PostHogProvider';
+import { routing } from '@/libs/i18nNavigation';
 import '@/styles/global.css';
 
 export const metadata: Metadata = {

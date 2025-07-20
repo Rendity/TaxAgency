@@ -11,7 +11,7 @@ import Sidebar from './Sidebar';
 import StepForm from './StepForm';
 import ThankYou from './ThankYou';
 
-export default function Questionnaire({ steps, client, company }: QuestionnaireProps) {
+export default function Questionnaire({ steps, client, company, doubleEntry }: QuestionnaireProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
@@ -19,56 +19,57 @@ export default function Questionnaire({ steps, client, company }: QuestionnaireP
 
   const methods = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      accounts: [{
-        firstName: 'Shahbaz Ali Khan',
-        lastName: 'Imrani',
-        email: 'shahbaz.pk@gmail.com',
-        operatingSystem: 'windows',
-      }, {
-        firstName: 'Habib Ali Khan',
-        lastName: 'Imrani',
-        email: 'habib.pk@gmail.com',
-        operatingSystem: 'macos',
-      }],
-      outgoingInvoices: 'Yes',
-      incomingInvoices: 'Yes',
-      recurringBills: 'Yes',
-      bankFileObtain: 'Yes',
-      ibans: [
-        {
-          value: 'DE89370400440532013000',
-        },
-        {
-          value: 'DE89370400440532013001',
-        },
-      ],
-      filingCategories: ['Pakistan', 'India', 'USA', 'Germany'],
-      payrollAccounting: 'Yes',
-      agmSettlements: 'Yes',
-      person: [
-        {
-          firstName: 'Mahboob Ali Khan',
-          lastName: 'Imrani',
-        },
-        {
-          firstName: 'Mansoor Ali Khan',
-          lastName: 'Imrani',
-        },
-      ],
-      ccFileObtain: 'Yes',
-      creditCards: [
-        {
-          value: '1234 5678 9012 3456',
-        },
-        {
-          value: '9876 5432 1098 7654',
-        },
-      ],
-      paypal: 'Yes',
-      cashDesk: 'Yes',
-      inventory: 'Yes',
-    },
+    // defaultValues: {
+    //   accounts: [{
+    //     firstName: 'Shahbaz Ali Khan',
+    //     lastName: 'Imrani',
+    //     email: 'shahbaz.pk@gmail.com',
+    //     operatingSystem: 'windows',
+    //   }, {
+    //     firstName: 'Habib Ali Khan',
+    //     lastName: 'Imrani',
+    //     email: 'habib.pk@gmail.com',
+    //     operatingSystem: 'macos',
+    //   }],
+    //   outgoingInvoices: 'Yes',
+    //   incomingInvoices: 'Yes',
+    //   recurringBills: 'Yes',
+    //   bankFileObtain: 'Yes',
+    //   ibans: [
+    //     {
+    //       value: 'DE89370400440532013000',
+    //     },
+    //     {
+    //       value: 'DE89370400440532013001',
+    //     },
+    //   ],
+    //   filingCategories: ['Pakistan', 'India', 'USA', 'Germany'],
+    //   payrollAccounting: 'Yes',
+    //   agmSettlements: 'Yes',
+    //   person: [
+    //     {
+    //       firstName: 'Mahboob Ali Khan',
+    //       lastName: 'Imrani',
+    //     },
+    //     {
+    //       firstName: 'Mansoor Ali Khan',
+    //       lastName: 'Imrani',
+    //     },
+    //   ],
+    //   ccFileObtain: 'Yes',
+    //   creditCards: [
+    //     {
+    //       value: '1234 5678 9012 3456',
+    //     },
+    //     {
+    //       value: '9876 5432 1098 7654',
+    //     },
+    //   ],
+    //   paypal: 'Yes',
+    //   cashrecipiets: 'Yes',
+    //   cashDesk: 'Yes',
+    //   inventory: 'Yes',
+    // },
   });
 
   const {
@@ -81,6 +82,8 @@ export default function Questionnaire({ steps, client, company }: QuestionnaireP
   } = methods;
   setValue('clientId', client);
   setValue('companyName', company);
+  setValue('doubleEntry', doubleEntry);
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
@@ -91,6 +94,9 @@ export default function Questionnaire({ steps, client, company }: QuestionnaireP
       data.ibans = data.ibans?.map((card: { value: string }) => ({
         value: card.value.replace(/\s+/g, ''),
       }));
+
+      setSubmitted(true);
+
       const response = await fetch('/api/questionnaire', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -111,8 +117,9 @@ export default function Questionnaire({ steps, client, company }: QuestionnaireP
   };
 
   const nextStep = async () => {
-    const fieldName = steps[currentStep]?.fields.map((f: Field) => f.name) as (keyof typeof formSchema._def.schema.shape)[];
-    const valid = await trigger(fieldName); // Validate current fields
+    const fieldNames = steps[currentStep]?.fields.map((f: Field) => f.name) as (keyof typeof formSchema._def.schema.shape)[];
+
+    const valid = await trigger(fieldNames); // Validate current fields
     if (valid) {
       const newStep = currentStep + 1;
       setCurrentStep(newStep);

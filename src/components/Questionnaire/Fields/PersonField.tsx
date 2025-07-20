@@ -1,9 +1,9 @@
 import type { Field } from '../types';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
 import React from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import FieldRenderer from '../FieldRenderer';
 
 type PersonFieldProps = {

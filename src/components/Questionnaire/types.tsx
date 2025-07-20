@@ -1,14 +1,14 @@
 // import type { UseFormRegister, UseFormSetValue } from 'react-hook-form';
 
-export type FieldType =
-  | 'text'
-  | 'email'
-  | 'radio'
-  | 'checkbox'
-  | 'iban'
-  | 'creditcard'
-  | 'person'
-  | 'multiCheckbox';
+export type FieldType
+  = | 'text'
+    | 'email'
+    | 'radio'
+    | 'checkbox'
+    | 'iban'
+    | 'creditcard'
+    | 'person'
+    | 'multiCheckbox';
 
 export type ButtonType = {
   type: 'button' | 'submit' | 'reset';
@@ -79,6 +79,7 @@ export type QuestionnaireProps = {
   steps: Step[];
   client: number;
   company: string;
+  doubleEntry: boolean;
 };
 
 export type StepFormProps = {

@@ -57,8 +57,10 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.56.1",
+    "react-toastify": "^11.0.5",
     "shadcn-ui": "^0.9.5",
     "tailwind-merge": "^3.2.0",
+    "xml2js": "^0.6.2",
     "zod": "^3.24.3"
   },
   "devDependencies": {
@@ -91,6 +93,7 @@
     "@types/node": "^22.14.1",
     "@types/pg": "^8.11.14",
     "@types/react": "^19.1.2",
+    "@types/xml2js": "^0.4.14",
     "@vitejs/plugin-react": "^4.4.1",
     "@vitest/coverage-v8": "^3.1.2",
     "@vitest/expect": "^3.1.2",

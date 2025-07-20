@@ -55,10 +55,37 @@ const CCSchema = z.object({
     }),
 });
 
+type checkEmails = {
+  email: string;
+  status: boolean;
+};
+
+const validatedEmails: checkEmails[] = [];
+const emailSchema = z
+  .string()
+  .email('Invalid email format')
+  .nonempty('Email is required')
+  .refine(async (email) => {
+    const trimmedEmail = email.toLowerCase().trim();
+    const existingEmail = validatedEmails.find(item => item.email === trimmedEmail);
+    if (existingEmail) {
+      return existingEmail.status; // Return the cached status
+    }
+    const url = `${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/questionnaire?email=${encodeURIComponent(trimmedEmail)}`;
+    const res = await fetch(url);
+    validatedEmails.push({
+      email: trimmedEmail,
+      status: res.status === 200,
+    });
+    return res.status === 200; // Must return true if valid
+  }, {
+    message: 'Email already in use',
+  });
+
 const accountSchema = z.object({
   firstName: z.string().min(1, 'Vorname ist erforderlich'),
   lastName: z.string().min(1, 'Nachname ist erforderlich'),
-  email: z.string().email('Invalid email').nonempty('Email is required'),
+  email: emailSchema,
   operatingSystem: z.enum(['windows', 'macos'], {
     errorMap: () => ({ message: 'Bitte geben Sie Ihr präferiertes Betriebsystem an' }),
   }),
@@ -69,6 +96,7 @@ export const formSchema = z
     // Step 1
     clientId: z.number().min(1, 'Client ID is required'),
     companyName: z.string().min(1, 'Company Name is required'),
+    doubleEntry: z.boolean().default(false),
     accounts: z.array(accountSchema).min(1, 'Mindestens eine Person erforderlich').refine((accounts) => {
       const emails = accounts.map(acc => acc.email.toLowerCase().trim());
       const allEmpty = emails.every(item => item === '');
@@ -110,10 +138,7 @@ export const formSchema = z
     agmSettlements: z.enum(['Yes', 'No']),
 
     // Step 8
-    person: z
-      .array(personSchema)
-      .min(1, 'At least one person is required')
-      .max(5, 'Maximum 5 persons allowed'),
+    person: z.array(personSchema).optional(),
 
     // Step 9
     creditCards: z.array(CCSchema).optional().refine(
@@ -130,10 +155,37 @@ export const formSchema = z
 
     // Step 10–12
     paypal: z.enum(['Yes', 'No']),
+    cashrecipiets: z.enum(['Yes', 'No']).optional(),
     cashDesk: z.enum(['Yes', 'No']),
     inventory: z.enum(['Yes', 'No']),
   })
   .superRefine((data, ctx) => {
+    // Custom validation logic
+    if (data.doubleEntry) {
+      // some validations in case of double entry
+      if (!data.person || data.person.length === 0) {
+        ctx.addIssue({
+          path: ['person'],
+          code: z.ZodIssueCode.custom,
+          message: 'At least one person is required in double-entry mode',
+        });
+      } else if (data.person.length > 5) {
+        ctx.addIssue({
+          path: ['person'],
+          code: z.ZodIssueCode.custom,
+          message: 'Maximum 5 persons allowed',
+        });
+      }
+    } else {
+      // ✅ Make cashrecipiets required if doubleEntry is false
+      if (data.cashrecipiets === undefined) {
+        ctx.addIssue({
+          path: ['cashrecipiets'],
+          code: z.ZodIssueCode.custom,
+          message: 'Cash receipts is required in single-entry mode',
+        });
+      }
+    }
     if (data.bankFileObtain === 'Yes') {
       if (!data.ibans || data.ibans.length === 0) {
         ctx.addIssue({

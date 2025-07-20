@@ -1,6 +1,6 @@
-CREATE TABLE "counter" (
+CREATE TABLE "Questionnaire" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"count" integer DEFAULT 0,
+	"data" json,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );

@@ -1,11 +1,11 @@
 {
-  "id": "0896e842-e142-406c-99b2-a602f7fa8731",
+  "id": "9f5b2244-c7e0-43aa-be86-2322b1f10d62",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.counter": {
-      "name": "counter",
+    "public.Questionnaire": {
+      "name": "Questionnaire",
       "schema": "",
       "columns": {
         "id": {
@@ -14,12 +14,11 @@
           "primaryKey": true,
           "notNull": true
         },
-        "count": {
-          "name": "count",
-          "type": "integer",
+        "data": {
+          "name": "data",
+          "type": "json",
           "primaryKey": false,
-          "notNull": false,
-          "default": 0
+          "notNull": false
         },
         "updated_at": {
           "name": "updated_at",

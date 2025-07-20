@@ -12,7 +12,12 @@
     "made_with": "<author></author>."
   },
   "Index": {
-    "meta_title": "Weiter.js Boilerplate -Präsentation",
+    "meta_title": "ABG Wirtschaftsprüfungs &amp; Steuerberatungs GmbH",
+    "meta_description": "Das Ganze im Auge. Die Details im Blick.",
+    "sponsors_title": "partners"
+  },
+  "GenerateURL": {
+    "meta_title": "ABG Wirtschaftsprüfungs &amp; URL",
     "meta_description": "Der nächste JS -Boilerplate ist der perfekte Startercode für Ihr Projekt. \nErstellen Sie Ihre Reaktionsanwendung mit dem nächsten.js -Framework.",
     "sponsors_title": "Partenaires"
   },
@@ -96,10 +101,12 @@
     },
     "step2": {
       "title": "Ausgangsrechnungen",
-      "description": "Rechnungen, die vom Unternehmen an Kunden ausgestellt werden."
+      "title2": "Rechnungen",
+      "description": "Rechnungen, die vom Unternehmen an Kunden ausgestellt werden.",
+      "description2": "Rechnungen die per Überweisung auf das Bankkonto eingehen und ausgehen."
     },
     "step3": {
-      "title": "Eingangsrechnungen",
+      "title": "Rechnungen",
       "fields": {
         "incomingInvoices": {
           "label": "Eingangsrechnungen",
@@ -161,6 +168,10 @@
     "step12": {
       "title": "Inventur",
       "description": "Schriftliche Aufstellung aller Vorräte (zB Waren) nach Art, Menge und Wert die auf Lager liegen. (mind. 1x im Jahr erforderlich, zum Ende eines jeden Jahres)."
+    },
+    "cashrecipient": {
+      "title": "Barbelege",
+      "description": "Rechnungen die der Unternehmer für sein Unternehmen privat bezahlt."
     }
   }
 }

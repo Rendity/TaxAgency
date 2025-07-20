@@ -12,9 +12,19 @@
     "made_with": "Made with <author></author>."
   },
   "Index": {
-    "meta_title": "Next.js Boilerplate Presentation",
-    "meta_description": "Next js Boilerplate is the perfect starter code for your project. Build your React application with the Next.js framework.",
-    "sponsors_title": "Sponsors"
+    "meta_title": "ABG Wirtschaftsprüfungs &amp; Steuerberatungs GmbH",
+    "meta_description": "Das Ganze im Auge. Die Details im Blick.",
+    "sponsors_title": "partners"
+  },
+  "GenerateURL": {
+    "meta_title": "ABG Wirtschaftsprüfungs &amp; URL",
+    "meta_description": "Das Ganze im Auge. Die Details im Blick.",
+    "form": {
+      "client_label": "Client ID",
+      "company_label": "Company Name",
+      "double_entry_label": "Double Entry Accounting",
+      "generate_button": "Generate URL"
+    }
   },
   "Counter": {
     "meta_title": "Counter",
@@ -96,7 +106,9 @@
     },
     "step2": {
       "title": "Outgoing Invoices",
-      "description": "Invoices issued by the company to customers."
+      "title2": "Invoices",
+      "description": "Invoices issued by the company to customers.",
+      "description2": "Invoices that are paid into and out of the bank account by bank transfer."
     },
     "step3": {
       "title": "Liabilities",
@@ -161,6 +173,10 @@
     "step12": {
       "title": "Inventory",
       "description": "A written list of all inventories (e.g., goods) in stock, broken down by type, quantity, and value. (Required at least once a year, at the end of each year)."
+    },
+    "cashrecipient": {
+      "title": "Cash receipts",
+      "description": "Invoices that the entrepreneur pays privately for his company.."
     }
   }
 }
