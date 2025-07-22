@@ -148,7 +148,7 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
   }
 
   return (
-    <div className="flex space-x-6 py-8">
+    <div className="flex space-x-6 py-8 items-start">
       <Sidebar
         currentStep={currentStep}
         steps={steps}

@@ -120,7 +120,7 @@
     },
     "step4": {
       "title": "Bank",
-      "description": "Jene Kontoauszüge die digital von der Bank heruntergeladen werden können. Mögliche Formate: PDF oder Camt.053 Datei<br/><br/><br/>Hinweis: Es müssen keine Bank-Dateien in die NextCloud hochgeladen werden, wenn die ABG die Camt.053 Dateien direkt vom Kreditinstitut bezieht. Hierfür ist eine Berechtigung des Unternehmens notwendig."
+      "description": "Jene Kontoauszüge die digital von der Bank heruntergeladen werden können. Mögliche Formate: PDF oder Camt.053 Datei<br/><br/>Hinweis: Es müssen keine Bank-Dateien in die NextCloud hochgeladen werden, wenn die ABG die Camt.053 Dateien direkt vom Kreditinstitut bezieht. Hierfür ist eine Berechtigung des Unternehmens notwendig."
     },
     "step5": {
       "title": "Ablage",
@@ -135,7 +135,7 @@
             "insurancePolicy": "Versicherungspolizzen"
           },
           "extraOptions": {
-            "saleAgreement": "Verkaufsvertrag",
+            "saleAgreement": "Kaufvertrag",
             "indemnityAgreement": "Entschädigungsvereinbarungen",
             "mortgageAgreement": "Hypothekenverträge"
           }
@@ -159,7 +159,7 @@
       "description": "Rechnungen, die per Kreditkarte bezahlt werden, bzw. Online-Bestellungen, die über die Kreditkarte abgewickelt wurden. Kreditkartenabrechnung & zugehörige Rechnungen sind immer in den jeweiligen Unterordnern (nach Abrechnungszeitraum) abzuspeichern."
     },
     "step10": {
-      "description": "'Monatlicher Auszug des PayPal-Kontos.<br/><br/>Hinweis: Falls das PayPal-Konto mit einem Bankkonto verknüpft ist, sollten ER im Ordner „Eingangsrechnungen“ abgespeichert werden. Falls das PayPal-Konto mit einer Kreditkarte verknüpft ist, sollten ER im richtigen Kreditkartenunterordner abgespeichert werden.'"
+      "description": "Monatlicher Auszug des PayPal-Kontos.<br/><br/>Hinweis: Falls das PayPal-Konto mit einem Bankkonto verknüpft ist, sollten ER im Ordner „Eingangsrechnungen“ abgespeichert werden. Falls das PayPal-Konto mit einer Kreditkarte verknüpft ist, sollten ER im richtigen Kreditkartenunterordner abgespeichert werden."
     },
     "step11": {
       "title": "Kassa",

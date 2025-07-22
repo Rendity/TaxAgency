@@ -78,7 +78,7 @@ export const PersonField = ({ name, fields }: PersonFieldProps) => {
                 className="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Delete
+                Löschen
               </Button>
             </div>
           </CardContent>
@@ -86,9 +86,7 @@ export const PersonField = ({ name, fields }: PersonFieldProps) => {
       ))}
       <Button type="button" className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" onClick={handleAdd}>
         <Plus className="w-4 h-4 mr-2" />
-        {name.toLocaleUpperCase()}
-        {' '}
-        hinzufügen
+        Hinzufügen
       </Button>
     </div>
   );

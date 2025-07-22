@@ -1,10 +1,10 @@
+import { Plus, Trash2 } from 'lucide-react';
+import { useEffect } from 'react';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { formatCreditCard } from '@/utils/Helpers';
-import { Plus, Trash2 } from 'lucide-react';
-import { useEffect } from 'react';
-import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 
 type CCFieldProps = {
   name: string;
@@ -72,7 +72,7 @@ export const CreditCardField = ({ name }: CCFieldProps) => {
       })}
       <Button type="button" className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" onClick={handleAdd}>
         <Plus className="w-4 h-4 mr-2" />
-        Credit Card
+        Kreditkarte
       </Button>
     </div>
   );

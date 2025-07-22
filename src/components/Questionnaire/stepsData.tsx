@@ -88,15 +88,15 @@ export const getStepsData = async (locale: string, doubleEntry: boolean): Promis
           name: 'filingCategories',
           type: 'multiCheckbox',
           options: [
-            { label: t('step5.fields.dynamicCheckboxDropdown.options.purchaseContract'), value: 'purchaseContract' },
-            { label: t('step5.fields.dynamicCheckboxDropdown.options.loanAgreement'), value: 'loanAgreement' },
-            { label: t('step5.fields.dynamicCheckboxDropdown.options.leasingContract'), value: 'leasingContract' },
-            { label: t('step5.fields.dynamicCheckboxDropdown.options.insurancePolicy'), value: 'insurancePolicy' },
+            { label: t('step5.fields.dynamicCheckboxDropdown.options.purchaseContract'), value: 'purchaseContract' }, // Kaufverträge
+            { label: t('step5.fields.dynamicCheckboxDropdown.options.loanAgreement'), value: 'loanAgreement' }, // Darlehensverträge
+            { label: t('step5.fields.dynamicCheckboxDropdown.options.leasingContract'), value: 'leasingContract' }, // Leasingverträge
+            { label: t('step5.fields.dynamicCheckboxDropdown.options.insurancePolicy'), value: 'insurancePolicy' }, // Versicherungspolizzen
           ],
           extraOptions: [
-            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.saleAgreement'), value: 'saleAgreement' },
-            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.indemnityAgreement'), value: 'indemnityAgreement' },
-            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.mortgageAgreement'), value: 'mortgageAgreement' },
+            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.saleAgreement'), value: 'saleAgreement' }, // Kaufverträge
+            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.indemnityAgreement'), value: 'indemnityAgreement' }, // Entschädigungsvereinbarungen
+            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.mortgageAgreement'), value: 'mortgageAgreement' }, // Hypothekarkredite
           ],
         },
       ],

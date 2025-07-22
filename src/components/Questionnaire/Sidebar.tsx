@@ -71,19 +71,19 @@ export default function Sidebar({ steps, currentStep, completedSteps, onStepClic
                   : 'bg-gray-100 text-gray-500 border-gray-300'
               }`}
             >
-              <span className="text-sm sm:hidden">R</span>
+              <span className="text-sm sm:hidden">Ü</span>
               <span className="hidden sm:block">
                 {steps.length === completedSteps.length
                   ? (
                       <Check className="w-4 h-4" strokeWidth={3} />
                     )
                   : (
-                      <span className="text-xs">R</span>
+                      <span className="text-xs">Ü</span>
                     )}
               </span>
             </div>
 
-            <span className="text-sm hidden sm:inline-block leading-none">Review</span>
+            <span className="text-sm hidden sm:inline-block leading-none">Übersicht</span>
           </button>
         </li>
       </ul>

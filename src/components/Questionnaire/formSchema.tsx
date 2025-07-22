@@ -16,7 +16,7 @@ const filingCategorySchema = z
 
 const filingCategoriesSchema = z
   .array(filingCategorySchema)
-  .min(1, 'Select at least one category')
+  .min(1, 'Bitte mindestens eine Kategorie auswählen')
   .refine(
     arr => new Set(arr).size === arr.length,
     { message: 'Kategorien müssen eindeutig sein' },
@@ -32,10 +32,10 @@ const isValidIBAN = (value: string): boolean => {
 const ibanSchema = z.object({
   value: z
     .string()
-    .min(1, 'IBAN is required')
+    .min(1, 'Bitte IBAN angeben')
     .transform(val => val.replace(/\s/g, ''))
     .refine(isValidIBAN, {
-      message: 'Ungültige IBAN',
+      message: 'Ungültiger IBAN',
     }),
 });
 
@@ -48,7 +48,7 @@ const isValidCreditCard = (value: string): boolean => {
 const CCSchema = z.object({
   value: z
     .string()
-    .min(1, 'Credit Card number is required')
+    .min(1, 'Bitte eine Kreditkarte angeben')
     .transform(val => val.replace(/\s/g, ''))
     .refine(isValidCreditCard, {
       message: 'Ungültige Kreditkartennummer',
@@ -79,7 +79,7 @@ const emailSchema = z
     });
     return res.status === 200; // Must return true if valid
   }, {
-    message: 'Email already in use',
+    message: 'Die E-Mail Adresse wurde bereits angelegt',
   });
 
 const accountSchema = z.object({
@@ -87,15 +87,15 @@ const accountSchema = z.object({
   lastName: z.string().min(1, 'Nachname ist erforderlich'),
   email: emailSchema,
   operatingSystem: z.enum(['windows', 'macos'], {
-    errorMap: () => ({ message: 'Bitte geben Sie Ihr präferiertes Betriebsystem an' }),
+    errorMap: () => ({ message: 'Bitte präferiertes Betriebsystem angeben' }),
   }),
 });
 
 export const formSchema = z
   .object({
     // Step 1
-    clientId: z.number().min(1, 'Client ID is required'),
-    companyName: z.string().min(1, 'Company Name is required'),
+    clientId: z.number().min(1, 'Bitte ID des Klienten angeben'),
+    companyName: z.string().min(1, 'Bitte Firmenname angeben'),
     doubleEntry: z.boolean().default(false),
     accounts: z.array(accountSchema).min(1, 'Mindestens eine Person erforderlich').refine((accounts) => {
       const emails = accounts.map(acc => acc.email.toLowerCase().trim());
@@ -167,13 +167,13 @@ export const formSchema = z
         ctx.addIssue({
           path: ['person'],
           code: z.ZodIssueCode.custom,
-          message: 'At least one person is required in double-entry mode',
+          message: 'Es ist mindestens eine Person anzugeben.',
         });
       } else if (data.person.length > 5) {
         ctx.addIssue({
           path: ['person'],
           code: z.ZodIssueCode.custom,
-          message: 'Maximum 5 persons allowed',
+          message: 'Es können maximal 5 Personen angegeben werden.',
         });
       }
     } else {
@@ -182,7 +182,7 @@ export const formSchema = z
         ctx.addIssue({
           path: ['cashrecipiets'],
           code: z.ZodIssueCode.custom,
-          message: 'Cash receipts is required in single-entry mode',
+          message: 'Der Name der Mitarbeiter mit Barauslagen ist anzugeben, wenn "Ja" ausgewählt wurde.',
         });
       }
     }
@@ -191,7 +191,7 @@ export const formSchema = z
         ctx.addIssue({
           path: ['ibans'],
           code: z.ZodIssueCode.custom,
-          message: 'At least one IBAN is required when "Yes" is selected.',
+          message: 'Mindestens ein IBAN ist anzugeben, wenn "Ja" ausgewählt wurde.',
         });
       }
     }
@@ -201,7 +201,7 @@ export const formSchema = z
         ctx.addIssue({
           path: ['creditCards'],
           code: z.ZodIssueCode.custom,
-          message: 'At least one Credit Card is required',
+          message: 'Mindestens eine Kreditkarte ist anzugeben, wenn "Ja" ausgewählt wurde.',
         });
       }
     }

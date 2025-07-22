@@ -47,17 +47,17 @@ export default function GeneralURL() {
     setGeneratedUrl(fullUrl);
 
     navigator.clipboard.writeText(fullUrl)
-      .then(() => toast.success('Link copied to clipboard!'))
-      .catch(() => toast.error('Failed to copy link'));
+      .then(() => toast.success('Der Link wurde in die Zwischenablage kopiert!'))
+      .catch(() => toast.error('Link konnte nicht kopiert werden'));
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 space-y-6">
-      <h1 className="text-2xl font-bold">Generate Link</h1>
+      <h1 className="text-2xl font-bold">Neuen Klienten anlegen</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <Label htmlFor="clientId">Client ID</Label>
+          <Label htmlFor="clientId">ID des Klienten</Label>
           <Input
             type="number"
             id="clientId"
@@ -69,7 +69,7 @@ export default function GeneralURL() {
         </div>
 
         <div>
-          <Label htmlFor="companyName">Company Name</Label>
+          <Label htmlFor="companyName">Firmenname</Label>
           <Input id="companyName" {...register('companyName')} />
           {errors.companyName && (
             <p className="text-sm text-red-600 mt-1">{errors.companyName.message}</p>
@@ -84,15 +84,15 @@ export default function GeneralURL() {
               setValue('doubleEntry', e.target.checked);
             }}
           />
-          <Label htmlFor="doubleEntry">Is Double Entry Accounting?</Label>
+          <Label htmlFor="doubleEntry">Doppelte Buchhaltung</Label>
         </div>
 
-        <Button type="submit" className="w-full">Generate Link</Button>
+        <Button type="submit" className="w-full bg-blue-600">Link für den neuen Klienten erstellen</Button>
       </form>
 
       {generatedUrl && (
         <div className="mt-4 p-4 border rounded bg-muted text-sm break-all">
-          <p className="font-medium">Generated URL:</p>
+          <p className="font-medium">Link für den neuen Klienten:</p>
           <p>{generatedUrl}</p>
         </div>
       )}

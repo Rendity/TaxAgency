@@ -16,10 +16,10 @@ const Review: FC<Props> = ({ steps, onSubmit, isSubmitting }) => {
   const data = getValues();
 
   return (
-    <form onSubmit={onSubmit} className="space-y-8 p-6 bg-white rounded-xl shadow-md">
+    <form onSubmit={onSubmit}>
       <h3 className="text-3xl font-bold text-gray-800 mb-4">Überprüfen Sie Ihre Antworten</h3>
 
-      <div className="space-y-10">
+      <div className="space-y-6">
         {steps.map((step, stepIdx) => (
           <div key={stepIdx} className="border rounded-lg p-6 bg-gray-50">
             <h4 className="text-2xl font-semibold text-blue-700 mb-4">{step.title}</h4>
