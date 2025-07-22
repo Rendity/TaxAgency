@@ -87,7 +87,7 @@ export default function GeneralURL() {
           <Label htmlFor="doubleEntry">Doppelte Buchhaltung</Label>
         </div>
 
-        <Button type="submit" className="w-full bg-blue-600">Link für den neuen Klienten erstellen</Button>
+        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">Link für den neuen Klienten erstellen</Button>
       </form>
 
       {generatedUrl && (
