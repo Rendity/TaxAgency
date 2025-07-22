@@ -11,15 +11,15 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-const FormSchema = z.object({
+const SetupFormSchema = z.object({
   clientId: z.number({ required_error: 'Client ID is required' }),
   companyName: z.string().min(1, 'Company name is required'),
-  doubleEntry: z.boolean(),
+  doubleEntry: z.boolean({ required_error: 'Doppelte Buchhaltung ist erforderlich' }),
 });
 
-type FormValues = z.infer<typeof FormSchema>;
+type FormValues = z.infer<typeof SetupFormSchema>;
 
-export default function GeneralURL() {
+export default function SetupForm() {
   const { locale } = useParams() as { locale: string };
   const [generatedUrl, setGeneratedUrl] = useState<string | null>(null);
 
@@ -30,9 +30,9 @@ export default function GeneralURL() {
     watch,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(FormSchema),
+    resolver: zodResolver(SetupFormSchema),
     defaultValues: {
-      doubleEntry: false,
+      doubleEntry: true,
     },
   });
 

@@ -1,6 +1,11 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+button,
+a {
+  cursor: pointer;
+}
+
 /* global styles in src/styles.css */
 .questionnaire-container {
   display: flex;

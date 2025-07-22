@@ -36,17 +36,18 @@ const Review: FC<Props> = ({ steps, onSubmit, isSubmitting }) => {
                 const isBoolean = typeof userValue === 'boolean';
 
                 if (Array.isArray(userValue)) {
-                  if (field.type === 'person' && userValue.length > 0) {
-                    const firstRow = userValue[0];
+                  if (field.type === 'person' && userValue.length > 0 && field.fields) {
+                    // const firstRow = userValue[0];
+                    console.warn('Data', field.fields);
                     skipLabel = true;
                     displayValue = (
                       <div className="overflow-x-auto">
                         <table className="min-w-full text-sm text-left text-gray-600 border">
                           <thead className="bg-gray-100 text-xs uppercase text-gray-700">
                             <tr>
-                              {Object.keys(firstRow).map(key => (
-                                <th key={key} className="px-4 py-2 border">
-                                  {key}
+                              {field.fields.map(field => (
+                                <th key={field.name} className="px-4 py-2 border">
+                                  {field.label}
                                 </th>
                               ))}
                             </tr>

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import GeneralURL from '@/components/GeneralUrl/index';
+import SetupForm from '@/components/SetupForm/index';
 
 type IIndexProps = {
   params: { locale: string };
@@ -10,7 +10,7 @@ export async function generateMetadata(props: IIndexProps): Promise<Metadata> {
   const { locale } = props.params ?? 'de';
   const t = await getTranslations({
     locale,
-    namespace: 'GenerateURL',
+    namespace: 'setup',
   });
 
   return {
@@ -19,12 +19,12 @@ export async function generateMetadata(props: IIndexProps): Promise<Metadata> {
   };
 }
 
-export default async function GenerateURL({ params }: IIndexProps) {
+export default async function Setup({ params }: IIndexProps) {
   const { locale } = params ?? 'de';
 
   setRequestLocale(locale);
 
   return (
-    <GeneralURL />
+    <SetupForm />
   );
 }

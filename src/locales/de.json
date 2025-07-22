@@ -16,7 +16,7 @@
     "meta_description": "Das Ganze im Auge. Die Details im Blick.",
     "sponsors_title": "partners"
   },
-  "GenerateURL": {
+  "setup": {
     "meta_title": "ABG Wirtschaftsprüfungs &amp; URL",
     "meta_description": "Der nächste JS -Boilerplate ist der perfekte Startercode für Ihr Projekt. \nErstellen Sie Ihre Reaktionsanwendung mit dem nächsten.js -Framework.",
     "sponsors_title": "Partenaires"
