@@ -3,11 +3,11 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import SetupForm from '@/components/SetupForm/index';
 
 type IIndexProps = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
 export async function generateMetadata(props: IIndexProps): Promise<Metadata> {
-  const { locale } = props.params ?? 'de';
+  const { locale } = await props.params ?? 'de';
   const t = await getTranslations({
     locale,
     namespace: 'setup',
@@ -20,7 +20,7 @@ export async function generateMetadata(props: IIndexProps): Promise<Metadata> {
 }
 
 export default async function Setup({ params }: IIndexProps) {
-  const { locale } = params ?? 'de';
+  const { locale } = await params ?? 'de';
 
   setRequestLocale(locale);
 

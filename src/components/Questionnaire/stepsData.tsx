@@ -88,15 +88,15 @@ export const getStepsData = async (locale: string, doubleEntry: boolean): Promis
           name: 'filingCategories',
           type: 'multiCheckbox',
           options: [
-            { label: t('step5.fields.dynamicCheckboxDropdown.options.purchaseContract'), value: 'purchaseContract' }, // Kaufverträge
-            { label: t('step5.fields.dynamicCheckboxDropdown.options.loanAgreement'), value: 'loanAgreement' }, // Darlehensverträge
-            { label: t('step5.fields.dynamicCheckboxDropdown.options.leasingContract'), value: 'leasingContract' }, // Leasingverträge
-            { label: t('step5.fields.dynamicCheckboxDropdown.options.insurancePolicy'), value: 'insurancePolicy' }, // Versicherungspolizzen
+            { label: t('step5.fields.dynamicCheckboxDropdown.options.purchaseContract'), value: 'Kaufverträge' }, // Kaufverträge
+            { label: t('step5.fields.dynamicCheckboxDropdown.options.loanAgreement'), value: 'Darlehensverträge' }, // Darlehensverträge
+            { label: t('step5.fields.dynamicCheckboxDropdown.options.leasingContract'), value: 'Leasingverträge' }, // Leasingverträge
+            { label: t('step5.fields.dynamicCheckboxDropdown.options.insurancePolicy'), value: 'Versicherungspolizzen' }, // Versicherungspolizzen
           ],
           extraOptions: [
-            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.saleAgreement'), value: 'saleAgreement' }, // Kaufverträge
-            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.indemnityAgreement'), value: 'indemnityAgreement' }, // Entschädigungsvereinbarungen
-            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.mortgageAgreement'), value: 'mortgageAgreement' }, // Hypothekarkredite
+            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.saleAgreement'), value: 'Kaufvertrag' }, // Kaufverträge
+            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.indemnityAgreement'), value: 'Entschädigungsvereinbarungen' }, // Entschädigungsvereinbarungen
+            { label: t('step5.fields.dynamicCheckboxDropdown.extraOptions.mortgageAgreement'), value: 'Hypothekarkredite' }, // Hypothekarkredite
           ],
         },
       ],
@@ -117,7 +117,6 @@ export const getStepsData = async (locale: string, doubleEntry: boolean): Promis
               { label: t('text_yes'), value: 'Yes' },
               { label: t('text_no'), value: 'No' },
             ],
-            description: 'Select Yes or No.',
           },
         ],
       },

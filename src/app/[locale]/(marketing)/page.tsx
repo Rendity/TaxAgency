@@ -5,12 +5,12 @@ import Questionnaire from '@/components/Questionnaire/index';
 import { getStepsData } from '@/components/Questionnaire/stepsData';
 
 type IIndexProps = {
-  params: { locale: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ locale: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateMetadata(props: IIndexProps): Promise<Metadata> {
-  const { locale } = props.params ?? 'de';
+  const { locale } = await props.params ?? 'de';
   const t = await getTranslations({
     locale,
     namespace: 'Index',
@@ -23,11 +23,11 @@ export async function generateMetadata(props: IIndexProps): Promise<Metadata> {
 }
 
 export default async function Index({ params, searchParams }: IIndexProps) {
-  const { locale } = params ?? 'de';
-
-  const client = searchParams?.client;
-  const company = searchParams?.company;
-  const doubleEntry = searchParams?.doubleEntry === 'true' || false;
+  const { locale } = await params ?? 'de';
+  const queryParams = await searchParams;
+  const client = queryParams?.client;
+  const company = queryParams?.company;
+  const doubleEntry = queryParams?.doubleEntry === 'true' || false;
 
   const isValidClient = client && !Number.isNaN(Number(client));
   const isValidCompany = typeof company === 'string' && company.trim().length > 0;

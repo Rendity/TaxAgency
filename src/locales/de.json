@@ -103,7 +103,10 @@
       "title": "Ausgangsrechnungen",
       "title2": "Rechnungen",
       "description": "Rechnungen, die vom Unternehmen an Kunden ausgestellt werden.",
-      "description2": "Rechnungen die per Überweisung auf das Bankkonto eingehen und ausgehen."
+      "description2": "Rechnungen die per Überweisung auf das Bankkonto eingehen und ausgehen.",
+      "field": {
+        "description": "Select Yes or No"
+      }
     },
     "step3": {
       "title": "Rechnungen",

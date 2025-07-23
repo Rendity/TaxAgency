@@ -1,5 +1,5 @@
-import { AppConfig } from '@/utils/AppConfig';
 import Image from 'next/image';
+import { AppConfig } from '@/utils/AppConfig';
 
 export const BaseTemplate = (props: {
   leftNav: React.ReactNode;

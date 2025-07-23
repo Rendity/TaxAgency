@@ -14,99 +14,123 @@ type Props = {
 const Review: FC<Props> = ({ steps, onSubmit, isSubmitting }) => {
   const { getValues } = useFormContext();
   const data = getValues();
-
   return (
     <form onSubmit={onSubmit}>
       <h3 className="text-3xl font-bold text-gray-800 mb-4">Überprüfen Sie Ihre Antworten</h3>
 
       <div className="space-y-6">
-        {steps.map((step, stepIdx) => (
-          <div key={stepIdx} className="border rounded-lg p-6 bg-gray-50">
-            <h4 className="text-2xl font-semibold text-blue-700 mb-4">{step.title}</h4>
+        {steps.map((step, stepIdx) => {
+          return (
+            <div key={stepIdx} className="relative border border-gray-300 rounded-lg p-6 bg-white shadow-sm mt-6">
+              {/* Step Title as a Legend */}
+              <div className="absolute -top-4 left-4 bg-white px-2 text-grey-700 text-lg font-semibold">
+                {step.title}
+              </div>
 
-            <div className="space-y-4">
-              {step.fields.map((field) => {
-                const userValue = data[field.name];
-                if (userValue === undefined || userValue === null) {
-                  return null;
-                }
+              {/* Fields */}
+              <div className="space-y-4 pt-2">
+                {step.fields.map((field) => {
+                  const userValue = data[field.name];
+                  if (userValue === undefined || userValue === null || field.name === 'iban') {
+                    return null;
+                  }
 
-                let displayValue;
-                let skipLabel = false;
-                const isBoolean = typeof userValue === 'boolean';
+                  let displayValue;
+                  let skipLabel = false;
+                  const isBoolean = typeof userValue === 'boolean';
 
-                if (Array.isArray(userValue)) {
-                  if (field.type === 'person' && userValue.length > 0 && field.fields) {
-                    // const firstRow = userValue[0];
-                    console.warn('Data', field.fields);
-                    skipLabel = true;
-                    displayValue = (
-                      <div className="overflow-x-auto">
-                        <table className="min-w-full text-sm text-left text-gray-600 border">
-                          <thead className="bg-gray-100 text-xs uppercase text-gray-700">
-                            <tr>
-                              {field.fields.map(field => (
-                                <th key={field.name} className="px-4 py-2 border">
-                                  {field.label}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {userValue.map((person: Record<string, any>, idx: number) => (
-                              <tr key={idx} className="bg-white border-t">
-                                {Object.values(person).map((value, i) => (
-                                  <td key={i} className="px-4 py-2 border">
-                                    {String(value)}
-                                  </td>
+                  if (Array.isArray(userValue)) {
+                    if (field.type === 'person' && userValue.length > 0 && field.fields) {
+                      skipLabel = true;
+                      displayValue = (
+                        <div className="overflow-x-auto border rounded">
+                          <table className="min-w-full text-sm text-left text-gray-600 border-collapse">
+                            <thead className="bg-gray-100 text-xs uppercase text-gray-700">
+                              <tr>
+                                {field.fields.map(field => (
+                                  <th key={field.name} className="px-4 py-2 border">
+                                    {field.label}
+                                  </th>
                                 ))}
                               </tr>
+                            </thead>
+                            <tbody>
+                              {userValue.map((person: Record<string, any>, idx: number) => (
+                                <tr key={idx} className="bg-white border-t">
+                                  {Object.values(person).map((value, i) => (
+                                    <td key={i} className="px-4 py-2 border">
+                                      {String(value)}
+                                    </td>
+                                  ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+                    } else if (field.type === 'multiCheckbox') {
+                      skipLabel = true;
+                      displayValue = (
+                        <div>
+                          <div className="mb-1 text-gray-700 font-medium">
+                            {field.description ?? step.description}
+                          </div>
+                          <ul className="list-disc list-inside text-gray-600">
+                            {userValue.map((value, idx) => (
+                              <li key={idx}>{value}</li>
                             ))}
-                          </tbody>
-                        </table>
+                          </ul>
+                        </div>
+                      );
+                    } else {
+                      skipLabel = true;
+                      displayValue = (
+                        <ul className="list-disc list-inside text-gray-600">
+                          {userValue.map((value, idx) => (
+                            <li key={idx}>{maskValue(value.value)}</li>
+                          ))}
+                        </ul>
+                      );
+                    }
+                  } else if (isBoolean) {
+                    displayValue = userValue ? 'Ja' : 'Nein';
+                  } else {
+                    displayValue = String(userValue);
+                  }
+
+                  if (!skipLabel) {
+                    return (
+                      <div
+                        key={field.name}
+                        className={`grid grid-cols-8 gap-2 items-start text-sm text-gray-700 ${
+                          isBoolean ? '' : 'pb-2'
+                        }`}
+                      >
+                        <span
+                          className="col-span-7 font-medium text-justify"
+                          // eslint-disable-next-line react-dom/no-dangerously-set-innerhtml
+                          dangerouslySetInnerHTML={{
+                            __html: field.description ?? step.description ?? '',
+                          }}
+                        />
+                        <span className="col-span-1 text-center text-gray-700 font-semibold text-lg">
+                          {displayValue === 'Yes' ? 'Ja' : (displayValue === 'No' ? 'Nein' : displayValue)}
+                        </span>
                       </div>
                     );
-                  } else {
-                    skipLabel = true;
-                    displayValue = (
-                      <ul className="list-disc list-inside text-gray-600">
-                        {userValue.map((value, idx) => (
-                          <li key={idx}>
-                            {field.type === 'multiCheckbox' ? value : maskValue(value.value)}
-                          </li>
-                        ))}
-                      </ul>
-                    );
                   }
-                } else if (isBoolean) {
-                  displayValue = userValue ? 'Yes' : 'No';
-                } else {
-                  displayValue = String(userValue);
-                }
 
-                if (!skipLabel) {
                   return (
-                    <div
-                      key={field.name}
-                      className={`flex justify-between items-center text-sm text-gray-700 ${
-                        isBoolean ? '' : 'pb-2'
-                      }`}
-                    >
-                      <span className="font-medium">{field.label}</span>
-                      <span className="text-gray-600">{displayValue}</span>
+                    <div key={field.name} className="text-sm text-gray-700">
+                      {displayValue === 'Yes' ? 'Ja' : (displayValue === 'No' ? 'Nein' : displayValue)}
                     </div>
                   );
-                }
-
-                return (
-                  <div key={field.name} className="text-sm text-gray-700">
-                    {displayValue}
-                  </div>
-                );
-              })}
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+
+          );
+        })}
       </div>
 
       <button

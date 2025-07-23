@@ -36,6 +36,7 @@ export const PersonField = ({ name, fields }: PersonFieldProps) => {
     if (items.length === 0) {
       handleAdd();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

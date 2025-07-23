@@ -19,57 +19,57 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
 
   const methods = useForm({
     resolver: zodResolver(formSchema),
-    // defaultValues: {
-    //   accounts: [{
-    //     firstName: 'Shahbaz Ali Khan',
-    //     lastName: 'Imrani',
-    //     email: 'shahbaz.pk@gmail.com',
-    //     operatingSystem: 'windows',
-    //   }, {
-    //     firstName: 'Habib Ali Khan',
-    //     lastName: 'Imrani',
-    //     email: 'habib.pk@gmail.com',
-    //     operatingSystem: 'macos',
-    //   }],
-    //   outgoingInvoices: 'Yes',
-    //   incomingInvoices: 'Yes',
-    //   recurringBills: 'Yes',
-    //   bankFileObtain: 'Yes',
-    //   ibans: [
-    //     {
-    //       value: 'DE89370400440532013000',
-    //     },
-    //     {
-    //       value: 'DE89370400440532013001',
-    //     },
-    //   ],
-    //   filingCategories: ['Pakistan', 'India', 'USA', 'Germany'],
-    //   payrollAccounting: 'Yes',
-    //   agmSettlements: 'Yes',
-    //   person: [
-    //     {
-    //       firstName: 'Mahboob Ali Khan',
-    //       lastName: 'Imrani',
-    //     },
-    //     {
-    //       firstName: 'Mansoor Ali Khan',
-    //       lastName: 'Imrani',
-    //     },
-    //   ],
-    //   ccFileObtain: 'Yes',
-    //   creditCards: [
-    //     {
-    //       value: '1234 5678 9012 3456',
-    //     },
-    //     {
-    //       value: '9876 5432 1098 7654',
-    //     },
-    //   ],
-    //   paypal: 'Yes',
-    //   cashrecipiets: 'Yes',
-    //   cashDesk: 'Yes',
-    //   inventory: 'Yes',
-    // },
+    defaultValues: {
+      // accounts: [{
+      //   firstName: 'Shahbaz Ali Khan',
+      //   lastName: 'Imrani',
+      //   email: 'ishahbaz4.pk@gmail.com',
+      //   operatingSystem: 'windows',
+      // }, {
+      //   firstName: 'Habib Ali Khan',
+      //   lastName: 'Imrani',
+      //   email: 'habib4.pk@gmail.com',
+      //   operatingSystem: 'macos',
+      // }],
+      // outgoingInvoices: 'No',
+      // incomingInvoices: 'No',
+      // recurringBills: 'No',
+      // bankFileObtain: 'No',
+      // ibans: [
+      //   {
+      //     value: 'DE89370400440532013000',
+      //   },
+      //   {
+      //     value: 'DE89370400440532013001',
+      //   },
+      // ],
+      // filingCategories: ['Kaufverträge', 'India', 'USA', 'Germany'],
+      // payrollAccounting: 'No',
+      // agmSettlements: 'No',
+      // person: [
+      //   {
+      //     firstName: 'Mahboob Ali Khan',
+      //     lastName: 'Imrani',
+      //   },
+      //   {
+      //     firstName: 'Mansoor Ali Khan',
+      //     lastName: 'Imrani',
+      //   },
+      // ],
+      // ccFileObtain: 'No',
+      // creditCards: [
+      //   {
+      //     value: '1234 5678 9012 3456',
+      //   },
+      //   {
+      //     value: '9876 5432 1098 7654',
+      //   },
+      // ],
+      // paypal: 'No',
+      // cashrecipiets: 'No',
+      // cashDesk: 'No',
+      // inventory: 'No',
+    },
   });
 
   const {
