@@ -3,9 +3,9 @@
 import type { z } from 'zod';
 import type { Field, QuestionnaireProps } from './types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { formSchema } from './formSchema';
+import { formSchema as getFormSchema } from './formSchema';
 import Review from './Review';
 import Sidebar from './Sidebar';
 import StepForm from './StepForm';
@@ -17,8 +17,14 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const schema = useMemo<ReturnType<typeof getFormSchema>>(
+    () => getFormSchema(`${client}_${company}`),
+
+    [client, company],
+  );
+
   const methods = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(schema),
     // defaultValues: {
     //   accounts: [
     //     {
@@ -90,7 +96,7 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
     setValue('doubleEntry', doubleEntry);
   }, [client, company, doubleEntry, setValue]);
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
       setIsSubmitting(true);
       data.creditCards = data.creditCards?.map((card: { value: string }) => ({
@@ -122,7 +128,7 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
   };
 
   const nextStep = async () => {
-    const fieldNames = steps[currentStep]?.fields.map((f: Field) => f.name) as (keyof typeof formSchema._def.schema.shape)[];
+    const fieldNames = steps[currentStep]?.fields.map((f: Field) => f.name) as (keyof typeof schema._def.schema.shape)[];
 
     const valid = await trigger(fieldNames); // Validate current fields
     if (valid) {

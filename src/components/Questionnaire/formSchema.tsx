@@ -74,7 +74,7 @@ const getBaseUrl = () => {
   return 'http://localhost:3000';
 };
 
-const emailSchema = z
+const emailSchema = (company: string) => z
   .string()
   .email('Invalid email format')
   .nonempty('Email is required')
@@ -85,8 +85,7 @@ const emailSchema = z
       return existingEmail.status; // Return the cached status
     }
     const baseUrl = getBaseUrl();
-    console.warn('Base URL:', baseUrl); // Debugging line
-    const url = `${baseUrl}/api/questionnaire?email=${encodeURIComponent(trimmedEmail)}`;
+    const url = `${baseUrl}/api/questionnaire?email=${encodeURIComponent(trimmedEmail)}&company=${company}`;
     const res = await fetch(url);
     validatedEmails.push({
       email: trimmedEmail,
@@ -97,22 +96,22 @@ const emailSchema = z
     message: 'Die E-Mail Adresse wurde bereits angelegt',
   });
 
-const accountSchema = z.object({
+const accountSchema = (company: string) => z.object({
   firstName: z.string().min(1, 'Vorname ist erforderlich'),
   lastName: z.string().min(1, 'Nachname ist erforderlich'),
-  email: emailSchema,
+  email: emailSchema(company),
   operatingSystem: z.enum(['windows', 'macos'], {
     errorMap: () => ({ message: 'Bitte präferiertes Betriebsystem angeben' }),
   }),
 });
 
-export const formSchema = z
+export const formSchema = (company: string) => z
   .object({
     // Step 1
     clientId: z.number().min(1, 'Bitte ID des Klienten angeben'),
     companyName: z.string().min(1, 'Bitte Firmenname angeben'),
     doubleEntry: z.boolean().default(false),
-    accounts: z.array(accountSchema).min(1, 'Mindestens eine Person erforderlich').refine((accounts) => {
+    accounts: z.array(accountSchema(company)).min(1, 'Mindestens eine Person erforderlich').refine((accounts) => {
       const emails = accounts.map(acc => acc.email.toLowerCase().trim());
       const allEmpty = emails.every(item => item === '');
       if (allEmpty) {

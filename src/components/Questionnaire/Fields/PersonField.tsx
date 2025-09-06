@@ -36,6 +36,7 @@ export const PersonField = ({ name, fields }: PersonFieldProps) => {
   useEffect(() => {
     if (name !== 'person' && items.length === 0 && !triggred) {
       handleAdd();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       triggred = true;
     }
   }, []);

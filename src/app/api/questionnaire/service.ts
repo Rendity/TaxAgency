@@ -68,6 +68,28 @@ class NextCloudOperations {
     }
   };
 
+  public async getUserGroups(userId: string) {
+    const res = await fetch(
+      `${process.env.NEXTCLOUD_BASE_URL}/ocs/v1.php/cloud/users/${encodeURIComponent(userId)}/groups`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': this.NEXTCLOUD_AUTH as string, // e.g. "Basic base64(admin:app-password)"
+          'OCS-APIRequest': 'true',
+          'Accept': 'application/json', // optional, makes response JSON instead of XML
+        },
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch groups: ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    // groups are inside data.ocs.data.groups
+    return data.ocs.data.groups;
+  };
+
   public async searchUser(email: string) {
     const data = new URLSearchParams({
       search: email,
@@ -184,7 +206,7 @@ class NextCloudOperations {
       headers: {
         'Authorization': this.NEXTCLOUD_AUTH,
         'OCS-APIRequest': 'true',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
       },
       body: `groupid=${encodeURIComponent(groupName)}`,
     });
@@ -276,8 +298,8 @@ export async function processNextCloud(data: QuestionnaireDataType) {
     // Create each dynamic category as a sibling folder
     // HOW TO HANDLE DYNAMIC CATEGORIES
     addPathToTree(folderTree, ['2_Ablage']);
-    if (data.filingCategories.length > 0) {
-      data.filingCategories.forEach((cat: string) => {
+    if (data.filingCategories && data.filingCategories.length > 0) {
+      data.filingCategories.filter((cat): cat is string => typeof cat === 'string').forEach((cat) => {
         addPathToTree(folderTree, ['2_Ablage', cat]);
       });
     }
@@ -306,14 +328,14 @@ export async function processNextCloud(data: QuestionnaireDataType) {
 
     // STEP # 8 - IBANS
     addPathToTree(folderTree, ['5_Bank']);
-    if (data.ibans.length > 0) {
+    if (data.ibans && data.ibans.length > 0) {
       data.ibans.forEach((iban: { value: string }) => {
         addPathToTree(folderTree, ['5_Bank', formatIBAN(iban.value)]);
       });
     }
 
     // STEP # 9 - CREDIT CARDS
-    if (data.creditCards.length > 0) {
+    if (data.creditCards && data.creditCards.length > 0) {
       data.creditCards.forEach((cc: { value: string }) => {
         addPathToTree(folderTree, ['8_Kreditkartenabrechnungen', maskCard(cc.value)]);
       });
@@ -336,14 +358,14 @@ export async function processNextCloud(data: QuestionnaireDataType) {
     // Create each dynamic category as a sibling folder
     // HOW TO HANDLE DYNAMIC CATEGORIES
     addPathToTree(ablageTree, ['2_Ablage']);
-    if (data.filingCategories.length > 0) {
-      data.filingCategories.forEach((cat: string) => {
+    if (data.filingCategories && data.filingCategories.length > 0) {
+      data.filingCategories.filter((cat): cat is string => typeof cat === 'string').forEach((cat) => {
         addPathToTree(ablageTree, ['2_Ablage', cat]);
       });
     }
     // STEP # 4
     addPathToTree(folderTree, ['5_Bank']);
-    if (data.ibans.length > 0) {
+    if (data.ibans && data.ibans.length > 0) {
       data.ibans.forEach((iban: { value: string }) => {
         addPathToTree(folderTree, ['5_Bank', formatIBAN(iban.value), 'VERBUCHT']);
       });
@@ -362,7 +384,7 @@ export async function processNextCloud(data: QuestionnaireDataType) {
     }
 
     // STEP # 7 - CREDIT CARDS
-    if (data.creditCards.length > 0) {
+    if (data.creditCards && data.creditCards.length > 0) {
       data.creditCards.forEach((cc: { value: string }) => {
         addPathToTree(folderTree, ['8_Kreditkartenabrechnungen', maskCard(cc.value)]);
       });
@@ -425,4 +447,22 @@ export async function validateEmail(email: string) {
   }).then((found) => {
     return found;
   });
+}
+
+export async function isAssignCompanyGroup(email: string, company: string) {
+  const operations = new NextCloudOperations();
+  return await operations
+    .getUserGroups(email)
+    .then((groups: string[]) => {
+      if (!groups || groups.length === 0) {
+        return false;
+      }
+
+      // case-insensitive match for safety
+      return groups.some((g: string) => g.toLowerCase() === company.toLowerCase());
+    })
+    .catch((err) => {
+      console.error('Error searching for user:', err);
+      return false;
+    });
 }
