@@ -16,9 +16,10 @@ export const getStepsData = async (locale: string, doubleEntry: boolean): Promis
       description: t('step0.description'),
       fields: [
         {
-          label: t('step1.title'),
+          label: t('step0.title'),
           name: 'message',
           type: 'message',
+          description: t('step0.body'),
         },
       ],
     },

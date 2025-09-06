@@ -83,7 +83,8 @@
     "text_camt": "Nein, da Camt.053",
     "step0": {
       "title": "Welcome",
-      "description": "Detail on step 0"
+      "description": "Detail on step 0",
+      "body": "Body"
     },
     "step1": {
       "title": "User Accounts",

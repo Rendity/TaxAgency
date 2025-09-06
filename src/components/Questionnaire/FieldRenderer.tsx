@@ -27,7 +27,7 @@ export default function FieldRenderer({
   switch (field.type) {
     case 'message':
       return (
-        <div>ok</div>
+        <div>{field.description}</div>
       );
     case 'multiCheckbox':
       return (
