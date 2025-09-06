@@ -13,7 +13,7 @@ export default function StepForm({
 }: StepFormProps) {
   // Only track validation state of current step's fields
 
-  const isPreviousDisabled = step.id === 1; // You can change logic if needed
+  const isPreviousDisabled = step.id === 0; // You can change logic if needed
   const isNextDisabled = false;
 
   return (
