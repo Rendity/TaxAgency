@@ -16,9 +16,10 @@ const filingCategorySchema = z
 
 const filingCategoriesSchema = z
   .array(filingCategorySchema)
-  .min(1, 'Bitte mindestens eine Kategorie auswählen')
+  // .min(1, 'Bitte mindestens eine Kategorie auswählen')
+  .optional()
   .refine(
-    arr => new Set(arr).size === arr.length,
+    arr => Array.isArray(arr) ? new Set(arr).size === arr.length : false,
     { message: 'Kategorien müssen eindeutig sein' },
   );
 
@@ -61,6 +62,17 @@ type checkEmails = {
 };
 
 const validatedEmails: checkEmails[] = [];
+
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    // Running in the browser, use the origin of the current request
+    return window.location.origin;
+  }
+
+  // Running on the server (Node.js)
+  return 'http://localhost:3000';
+};
+
 const emailSchema = z
   .string()
   .email('Invalid email format')
@@ -71,7 +83,9 @@ const emailSchema = z
     if (existingEmail) {
       return existingEmail.status; // Return the cached status
     }
-    const url = `${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/questionnaire?email=${encodeURIComponent(trimmedEmail)}`;
+    const baseUrl = getBaseUrl();
+    console.warn('Base URL:', baseUrl); // Debugging line
+    const url = `${baseUrl}/api/questionnaire?email=${encodeURIComponent(trimmedEmail)}`;
     const res = await fetch(url);
     validatedEmails.push({
       email: trimmedEmail,
@@ -109,7 +123,7 @@ export const formSchema = z
     }),
 
     // Step 2
-    outgoingInvoices: z.enum(['Yes', 'No']),
+    outgoingInvoices: z.enum(['Yes', 'No']).optional(),
 
     // Step 3
     incomingInvoices: z.enum(['Yes', 'No']),
@@ -163,13 +177,14 @@ export const formSchema = z
     // Custom validation logic
     if (data.doubleEntry) {
       // some validations in case of double entry
-      if (!data.person || data.person.length === 0) {
+      if (!data.outgoingInvoices) {
         ctx.addIssue({
-          path: ['person'],
+          path: ['outgoingInvoices'],
           code: z.ZodIssueCode.custom,
-          message: 'Es ist mindestens eine Person anzugeben.',
+          message: 'Ausgangsrechnungen required.',
         });
-      } else if (data.person.length > 5) {
+      }
+      if (data.person && data.person.length > 5) {
         ctx.addIssue({
           path: ['person'],
           code: z.ZodIssueCode.custom,
@@ -178,7 +193,7 @@ export const formSchema = z
       }
     } else {
       // ✅ Make cashrecipiets required if doubleEntry is false
-      if (data.cashrecipiets === undefined) {
+      if (!data.cashrecipiets) {
         ctx.addIssue({
           path: ['cashrecipiets'],
           code: z.ZodIssueCode.custom,

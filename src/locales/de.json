@@ -176,5 +176,8 @@
       "title": "Barbelege",
       "description": "Rechnungen die der Unternehmer für sein Unternehmen privat bezahlt."
     }
+  },
+  "General": {
+    "text_other": "Andere Auswahl"
   }
 }

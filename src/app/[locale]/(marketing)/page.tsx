@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import Questionnaire from '@/components/Questionnaire/index';
 import { getStepsData } from '@/components/Questionnaire/stepsData';
 
@@ -33,7 +33,7 @@ export default async function Index({ params, searchParams }: IIndexProps) {
   const isValidCompany = typeof company === 'string' && company.trim().length > 0;
 
   if (!isValidClient || !isValidCompany) {
-    notFound(); // ⛔ trigger 404
+    redirect('/setup');
   }
 
   setRequestLocale(locale);
@@ -43,7 +43,7 @@ export default async function Index({ params, searchParams }: IIndexProps) {
     <Questionnaire
       client={Number(client)}
       company={String(company)}
-      doubleEntry={Boolean(doubleEntry)}
+      doubleEntry={doubleEntry}
       steps={steps}
     />
   );

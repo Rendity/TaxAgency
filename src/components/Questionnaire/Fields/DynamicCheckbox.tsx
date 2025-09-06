@@ -130,7 +130,7 @@ export const DynamicCheckboxDropdownField = ({
             {opt.label}
           </option>
         ))}
-        <option value={OTHER_OPTION_VALUE}>Other</option>
+        <option value={OTHER_OPTION_VALUE}>Andere Auswahl</option>
       </select>
 
       {/* Input for Other */}
@@ -140,7 +140,7 @@ export const DynamicCheckboxDropdownField = ({
             type="text"
             value={customInput}
             onChange={e => setCustomInput(e.target.value)}
-            placeholder="Enter custom option"
+            placeholder="Eigene Kategorie"
             className="p-2 border rounded-md"
           />
           <button
@@ -148,7 +148,7 @@ export const DynamicCheckboxDropdownField = ({
             onClick={handleAddCustom}
             className="px-3 py-2 bg-blue-500 text-white rounded"
           >
-            Add
+            Hinzufügen
           </button>
         </div>
       )}

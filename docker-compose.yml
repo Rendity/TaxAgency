@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: nextjs_app
+    restart: always
+    env_file: .env.production
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SKIP_DB=false   # runtime should connect to DB
+    networks:
+      - web
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.start.rule=Host(`start.abgwt.at`)"
+      - "traefik.http.routers.start.entrypoints=websecure"
+      - "traefik.http.routers.start.tls.certresolver=myresolver"
+
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ky96ng,iBV
+      POSTGRES_DB: abgwt
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - web
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d abgwt"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=admin@abgwt.at"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - web
+
+volumes:
+  postgres_data:
+  letsencrypt:
+
+networks:
+  web:
+    external: false

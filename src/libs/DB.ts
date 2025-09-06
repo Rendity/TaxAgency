@@ -2,21 +2,34 @@ import path from 'node:path';
 import { drizzle as drizzlePg } from 'drizzle-orm/node-postgres';
 import { migrate as migratePg } from 'drizzle-orm/node-postgres/migrator';
 import { Client } from 'pg';
-import { schemaModules } from '@/models/schema'; // Your manual schema list
+import { schemaModules } from '@/models/schema';
+import { Env } from './Env';
 
-import { Env } from './Env'; // Your env loader
-
-// Set up clients and apply migrations
 const schema = Object.assign({}, ...schemaModules);
 
-const client = new Client({
-  connectionString: Env.DATABASE_URL,
-});
-await client.connect();
+let dbInstance: ReturnType<typeof drizzlePg> | null = null;
 
-const drizzle = drizzlePg(client, { schema });
-await migratePg(drizzle, {
-  migrationsFolder: path.join(process.cwd(), 'migrations'),
-});
+export async function getDb() {
+  if (process.env.SKIP_DB === 'true') {
+    console.warn('⚠️ Database connection skipped (SKIP_DB=true)');
+    return null;
+  }
 
-export const db = drizzle;
+  if (!dbInstance) {
+    const client = new Client({
+      connectionString: Env.DATABASE_URL,
+    });
+    await client.connect();
+
+    const drizzle = drizzlePg(client, { schema });
+
+    // Run migrations only once
+    await migratePg(drizzle, {
+      migrationsFolder: path.join(process.cwd(), 'migrations'),
+    });
+
+    dbInstance = drizzle;
+  }
+
+  return dbInstance;
+}

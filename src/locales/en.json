@@ -178,5 +178,8 @@
       "title": "Cash receipts",
       "description": "Invoices that the entrepreneur pays privately for his company.."
     }
+  },
+  "General": {
+    "text_other": "Other"
   }
 }

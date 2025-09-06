@@ -40,34 +40,38 @@ const Review: FC<Props> = ({ steps, onSubmit, isSubmitting }) => {
                   const isBoolean = typeof userValue === 'boolean';
 
                   if (Array.isArray(userValue)) {
-                    if (field.type === 'person' && userValue.length > 0 && field.fields) {
-                      skipLabel = true;
-                      displayValue = (
-                        <div className="overflow-x-auto border rounded">
-                          <table className="min-w-full text-sm text-left text-gray-600 border-collapse">
-                            <thead className="bg-gray-100 text-xs uppercase text-gray-700">
-                              <tr>
-                                {field.fields.map(field => (
-                                  <th key={field.name} className="px-4 py-2 border">
-                                    {field.label}
-                                  </th>
-                                ))}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {userValue.map((person: Record<string, any>, idx: number) => (
-                                <tr key={idx} className="bg-white border-t">
-                                  {Object.values(person).map((value, i) => (
-                                    <td key={i} className="px-4 py-2 border">
-                                      {String(value)}
-                                    </td>
+                    if (field.type === 'person') {
+                      if (userValue.length > 0 && field.fields) {
+                        skipLabel = true;
+                        displayValue = (
+                          <div className="overflow-x-auto border rounded">
+                            <table className="min-w-full text-sm text-left text-gray-600 border-collapse">
+                              <thead className="bg-gray-100 text-xs uppercase text-gray-700">
+                                <tr>
+                                  {field.fields.map(field => (
+                                    <th key={field.name} className="px-4 py-2 border">
+                                      {field.label}
+                                    </th>
                                   ))}
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      );
+                              </thead>
+                              <tbody>
+                                {userValue.map((person: Record<string, any>, idx: number) => (
+                                  <tr key={idx} className="bg-white border-t">
+                                    {Object.values(person).map((value, i) => (
+                                      <td key={i} className="px-4 py-2 border">
+                                        {String(value)}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        );
+                      } else {
+                        displayValue = 'No';
+                      }
                     } else if (field.type === 'multiCheckbox') {
                       skipLabel = true;
                       displayValue = (

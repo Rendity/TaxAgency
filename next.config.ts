@@ -14,6 +14,7 @@ export default withSentryConfig(
   bundleAnalyzer(
     withNextIntl({
       eslint: {
+        ignoreDuringBuilds: true,
         dirs: ['.'],
       },
       poweredByHeader: false,

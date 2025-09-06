@@ -3,7 +3,7 @@
 import type { z } from 'zod';
 import type { Field, QuestionnaireProps } from './types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { formSchema } from './formSchema';
 import Review from './Review';
@@ -20,32 +20,35 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
   const methods = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      // accounts: [{
-      //   firstName: 'Shahbaz Ali Khan',
-      //   lastName: 'Imrani',
-      //   email: 'ishahbaz4.pk@gmail.com',
-      //   operatingSystem: 'windows',
-      // }, {
-      //   firstName: 'Habib Ali Khan',
-      //   lastName: 'Imrani',
-      //   email: 'habib4.pk@gmail.com',
-      //   operatingSystem: 'macos',
-      // }],
+      accounts: [
+        {
+          firstName: 'Shahbaz Ali Khan',
+          lastName: 'Imrani',
+          email: 'ishahbaz4.pk@gmail.com',
+          operatingSystem: 'windows',
+        },
+        // {
+        //   firstName: 'Habib Ali Khan',
+        //   lastName: 'Imrani',
+        //   email: 'habib4.pk@gmail.com',
+        //   operatingSystem: 'macos',
+        // },
+      ],
       // outgoingInvoices: 'No',
-      // incomingInvoices: 'No',
-      // recurringBills: 'No',
-      // bankFileObtain: 'No',
-      // ibans: [
-      //   {
-      //     value: 'DE89370400440532013000',
-      //   },
-      //   {
-      //     value: 'DE89370400440532013001',
-      //   },
-      // ],
-      // filingCategories: ['Kaufverträge', 'India', 'USA', 'Germany'],
-      // payrollAccounting: 'No',
-      // agmSettlements: 'No',
+      incomingInvoices: 'No',
+      recurringBills: 'No',
+      bankFileObtain: 'Yes',
+      ibans: [
+        {
+          value: 'DE89370400440532013000',
+        },
+        {
+          value: 'DE89370400440532013001',
+        },
+      ],
+      filingCategories: ['Kaufverträge', 'India', 'USA', 'Germany'],
+      payrollAccounting: 'No',
+      agmSettlements: 'No',
       // person: [
       //   {
       //     firstName: 'Mahboob Ali Khan',
@@ -56,19 +59,19 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
       //     lastName: 'Imrani',
       //   },
       // ],
-      // ccFileObtain: 'No',
-      // creditCards: [
-      //   {
-      //     value: '1234 5678 9012 3456',
-      //   },
-      //   {
-      //     value: '9876 5432 1098 7654',
-      //   },
-      // ],
-      // paypal: 'No',
-      // cashrecipiets: 'No',
-      // cashDesk: 'No',
-      // inventory: 'No',
+      ccFileObtain: 'Yes',
+      creditCards: [
+        {
+          value: '1234 5678 9012 3456',
+        },
+        {
+          value: '9876 5432 1098 7654',
+        },
+      ],
+      paypal: 'No',
+      cashrecipiets: 'No',
+      cashDesk: 'No',
+      inventory: 'No',
     },
   });
 
@@ -80,14 +83,19 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
     register,
     trigger,
   } = methods;
-  setValue('clientId', client);
-  setValue('companyName', company);
-  setValue('doubleEntry', doubleEntry);
+  // setValue('clientId', client);
+  // setValue('companyName', company);
+  // setValue('doubleEntry', doubleEntry);
+
+  useEffect(() => {
+    setValue('clientId', client);
+    setValue('companyName', company);
+    setValue('doubleEntry', doubleEntry);
+  }, [client, company, doubleEntry, setValue]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
-      // data.ibans = data.ibans.map((iban: string) => iban.replace(/\s+/g, ''));
       data.creditCards = data.creditCards?.map((card: { value: string }) => ({
         value: card.value.replace(/\s+/g, ''),
       }));
@@ -139,6 +147,9 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
 
   const handleStepClick = (index: number) => {
     if (completedSteps.includes(index) || index === currentStep) {
+      setCurrentStep(index);
+    } else if (index === completedSteps.length) {
+      // Allow navigation to the next step if it's the immediate next step
       setCurrentStep(index);
     }
   };

@@ -33,7 +33,7 @@ export const PersonField = ({ name, fields }: PersonFieldProps) => {
 
   // 👇 Add this useEffect to auto-append one person on initial render
   useEffect(() => {
-    if (items.length === 0) {
+    if (name !== 'person' && items.length === 0) {
       handleAdd();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

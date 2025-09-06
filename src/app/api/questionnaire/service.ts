@@ -17,12 +17,10 @@ class NextCloudOperations {
   private NEXTCLOUD_AUTH = `Basic ${Buffer.from(`${process.env.NEXTCLOUD_USER}:${process.env.NEXTCLOUD_PASS}`).toString('base64')}`;
   private account: Record<string, any>;
   private password: string;
-  private clientBasicAuth: string;
-  private rootClientFolder: string = 'Klienten';
+  private rootClientFolder: string = 'API_Klienten';
   constructor() {
     this.account = {};
     this.password = '';
-    this.clientBasicAuth = '';
   }
 
   public setAccount(account: Record<string, any>) {
@@ -59,7 +57,6 @@ class NextCloudOperations {
           return email.toLowerCase() === this.account.email.toLowerCase();
         });
         if (found.length > 0) {
-          this.clientBasicAuth = `Basic ${Buffer.from(`${this.account.email}:${this.password}`).toString('base64')}`;
           await this.createFolder('');
           return true;
         }
@@ -116,15 +113,15 @@ class NextCloudOperations {
   }
 
   public async createFolder(fullPath: string) {
-    const baseUrl = `${process.env.NEXTCLOUD_BASE_URL}/remote.php/dav/files/${encodeURIComponent(this.account.email)}/${encodeURIComponent(this.rootClientFolder)}/`;
+    const baseUrl = `${process.env.NEXTCLOUD_BASE_URL}/remote.php/dav/files/${encodeURIComponent(process.env.NEXTCLOUD_USER ?? '')}/${encodeURIComponent(this.rootClientFolder)}/`;
     let preappend = '';
     if (fullPath !== '') {
       preappend = `${this.encodePath(fullPath)}/`;
     }
     const url = `${baseUrl}${preappend}`;
-    console.warn(`Creating folder "${url}"`);
+    // console.warn(`Creating folder "${url}"`);
     const myHeaders = new Headers();
-    myHeaders.append('Authorization', this.clientBasicAuth);
+    myHeaders.append('Authorization', this.NEXTCLOUD_AUTH);
     const requestOptions: RequestInit = {
       method: 'MKCOL',
       headers: myHeaders,
@@ -157,6 +154,87 @@ class NextCloudOperations {
 
       if (node.children?.length) {
         await this.createFolderTree(fullPath, node.children);
+      }
+    }
+  }
+
+  public async shareFolderWithGroup(FOLDER_PATH: string, groupName: string) {
+    await fetch(
+      `${process.env.NEXTCLOUD_BASE_URL}/ocs/v2.php/apps/files_sharing/api/v1/shares`,
+      {
+        method: 'POST',
+        headers: {
+          'OCS-APIRequest': 'true',
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': this.NEXTCLOUD_AUTH,
+        },
+        body: new URLSearchParams({
+          path: `/${this.rootClientFolder}/${FOLDER_PATH}`,
+          shareType: '1', // 0 = user, 1 = group, 3 = public link
+          shareWith: groupName,
+          permissions: '31', // full permissions (read/write/create/delete/share)
+        }),
+      },
+    );
+  }
+
+  public async createGroup(groupName: string) {
+    const url = `${process.env.NEXTCLOUD_BASE_URL}/ocs/v1.php/cloud/groups`;
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.NEXTCLOUD_AUTH,
+        'OCS-APIRequest': 'true',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `groupid=${encodeURIComponent(groupName)}`,
+    });
+  }
+
+  public async assignGroup(groupName: string) {
+    const url = `${process.env.NEXTCLOUD_BASE_URL}/ocs/v1.php/cloud/users/${encodeURIComponent(this.account.email)}/groups`;
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.NEXTCLOUD_AUTH,
+        'OCS-APIRequest': 'true',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `groupid=${encodeURIComponent(groupName)}`,
+    });
+  }
+
+  public async processFolders(groupName: string, doubleEntry: boolean, folderTree: FolderNode[] = [], ablageTree: FolderNode[] = []) {
+    let parentFolder = groupName;
+    await this.createFolder(parentFolder);
+
+    const currentYear = new Date().getFullYear();
+    if (doubleEntry) {
+      parentFolder = `${parentFolder}/${currentYear}`;
+      await this.createFolder(parentFolder);
+
+      await this.shareFolderWithGroup(parentFolder, groupName);
+    }
+
+    parentFolder = `${parentFolder}/Buchhaltung ${currentYear}`;
+    await this.createFolder(parentFolder);
+    if (!doubleEntry) {
+      await this.shareFolderWithGroup(parentFolder, groupName);
+    }
+
+    if (doubleEntry) {
+      await this.createFolderTree(parentFolder, folderTree);
+    } else {
+    // Ablage Record Entry
+      await this.createFolderTree(parentFolder, ablageTree);
+
+      for (let i = 0; i < 12; i++) {
+        const date = new Date(currentYear, i); // Year doesn't matter
+        const monthName = date.toLocaleString('en-US', { month: 'long' });
+        const monthFolder = `${parentFolder}/${monthName}`;
+        await this.createFolder(monthFolder);
+
+        await this.createFolderTree(monthFolder, folderTree);
       }
     }
   }
@@ -319,6 +397,14 @@ export async function processNextCloud(data: QuestionnaireDataType) {
   }
 
   const operations = new NextCloudOperations();
+  const groupName = `${data.clientId}_${data.companyName}`;
+
+  await operations.createGroup(groupName);
+
+  // CREATE FOLDER TREE
+  await operations.processFolders(groupName, data.doubleEntry, folderTree, ablageTree);
+
+  // Find or Create Group
   for (const account of accounts) {
     operations.setAccount(account);
     const response = await operations.createNextcloudUser().catch((err) => {
@@ -328,32 +414,8 @@ export async function processNextCloud(data: QuestionnaireDataType) {
       return bool;
     });
     if (response) {
-      const currentYear = new Date().getFullYear();
-      let parentFolder = `${data.clientId}_${data.companyName}`;
-      await operations.createFolder(parentFolder);
-
-      if (data.doubleEntry) {
-        parentFolder = `${parentFolder}/${currentYear}`;
-        await operations.createFolder(parentFolder);
-      }
-      parentFolder = `${parentFolder}/Buchhaltung ${currentYear}`;
-      await operations.createFolder(parentFolder);
-
-      if (data.doubleEntry) {
-        await operations.createFolderTree(parentFolder, folderTree);
-      } else {
-        // Ablage Record Entry
-        await operations.createFolderTree(parentFolder, ablageTree);
-
-        for (let i = 0; i < 12; i++) {
-          const date = new Date(currentYear, i); // Year doesn't matter
-          const monthName = date.toLocaleString('en-US', { month: 'long' });
-          const monthFolder = `${parentFolder}/${monthName}`;
-          await operations.createFolder(monthFolder);
-
-          await operations.createFolderTree(monthFolder, folderTree);
-        }
-      }
+      // ASSIGN USER TO GROUP
+      await operations.assignGroup(groupName);
     }
   }
   return await saveQuestionnaire(data);
