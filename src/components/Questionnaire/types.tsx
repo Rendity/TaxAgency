@@ -8,6 +8,7 @@ export type FieldType
     | 'iban'
     | 'creditcard'
     | 'person'
+    | 'message'
     | 'multiCheckbox';
 
 export type ButtonType = {

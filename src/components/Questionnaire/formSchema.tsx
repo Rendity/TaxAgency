@@ -9,6 +9,7 @@ const personSchema = z.object({
 
 const filingCategorySchema = z
   .string()
+  .optional()
   .refine(
     val => typeof val === 'string' && val.length > 0,
     { message: 'Ungültige Kategorie' },
@@ -19,7 +20,7 @@ const filingCategoriesSchema = z
   // .min(1, 'Bitte mindestens eine Kategorie auswählen')
   .optional()
   .refine(
-    arr => Array.isArray(arr) ? new Set(arr).size === arr.length : false,
+    arr => Array.isArray(arr) && arr.length > 0 ? new Set(arr).size === arr.length : true,
     { message: 'Kategorien müssen eindeutig sein' },
   );
 

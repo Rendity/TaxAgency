@@ -25,6 +25,10 @@ export default function FieldRenderer({
   };
 
   switch (field.type) {
+    case 'message':
+      return (
+        <div>ok</div>
+      );
     case 'multiCheckbox':
       return (
         <DynamicCheckboxDropdownField field={field} value={value} register={register} errors={errors} onChange={onChange} />

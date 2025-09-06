@@ -8,6 +8,13 @@
       "when": 1752776050626,
       "tag": "0000_misty_molten_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1757161046984,
+      "tag": "0001_talented_riptide",
+      "breakpoints": true
     }
   ]
 }

@@ -11,6 +11,18 @@ export const getStepsData = async (locale: string, doubleEntry: boolean): Promis
   const t = await getTranslations({ locale, namespace: 'Questionnaire' });
   const commonQuestions: Step[] = [
     {
+      id: 0,
+      title: t('step0.title'),
+      description: t('step0.description'),
+      fields: [
+        {
+          label: t('step1.title'),
+          name: 'message',
+          type: 'message',
+        },
+      ],
+    },
+    {
       id: 1,
       title: t('step1.title'),
       description: t('step1.description'),
@@ -172,7 +184,7 @@ export const getStepsData = async (locale: string, doubleEntry: boolean): Promis
             label: 'Person',
             name: 'person',
             type: 'person',
-            description: '',
+            description: t('step8.description'),
             fields: [
               {
                 label: t('step1.field.firstname.label'),

@@ -80,7 +80,6 @@ class NextCloudOperations {
       },
     });
     const text = await res.text();
-
     if (!res.ok && res.status !== 200) {
       throw new Error(`Failed to search user: ${text}`);
     }
@@ -208,19 +207,16 @@ class NextCloudOperations {
     let parentFolder = groupName;
     await this.createFolder(parentFolder);
 
+    await this.shareFolderWithGroup(parentFolder, groupName);
+
     const currentYear = new Date().getFullYear();
     if (doubleEntry) {
       parentFolder = `${parentFolder}/${currentYear}`;
       await this.createFolder(parentFolder);
-
-      await this.shareFolderWithGroup(parentFolder, groupName);
     }
 
     parentFolder = `${parentFolder}/Buchhaltung ${currentYear}`;
     await this.createFolder(parentFolder);
-    if (!doubleEntry) {
-      await this.shareFolderWithGroup(parentFolder, groupName);
-    }
 
     if (doubleEntry) {
       await this.createFolderTree(parentFolder, folderTree);

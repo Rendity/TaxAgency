@@ -86,6 +86,10 @@
     "text_yes": "Yes",
     "text_no": "No",
     "text_camt": "No, because Camt.053",
+    "step0": {
+      "title": "Welcome",
+      "description": "Detail on step 0"
+    },
     "step1": {
       "title": "Account",
       "description": "Provide your personal details and select your operating system.",

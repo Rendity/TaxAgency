@@ -5,19 +5,11 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
-const SetupFormSchema = z.object({
-  clientId: z.number({ required_error: 'Client ID is required' }),
-  companyName: z.string().min(1, 'Company name is required'),
-  doubleEntry: z.boolean({ required_error: 'Doppelte Buchhaltung ist erforderlich' }),
-});
-
-type FormValues = z.infer<typeof SetupFormSchema>;
+import { SetupFormSchema } from '@/app/api/setup/model';
+import type { SetupFormValues } from '@/app/api/setup/model';
 
 export default function SetupForm() {
   const { locale } = useParams() as { locale: string };
@@ -26,29 +18,34 @@ export default function SetupForm() {
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
+    // control,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<SetupFormValues>({
     resolver: zodResolver(SetupFormSchema),
     defaultValues: {
-      doubleEntry: true,
+      doubleEntry: 'true',
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    const query = new URLSearchParams({
-      client: data.clientId.toString(),
-      company: data.companyName,
-      doubleEntry: data.doubleEntry.toString(),
-    }).toString();
+  const onSubmit = async (data: SetupFormValues) => {
+    const response = await fetch('/api/setup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
 
-    const fullUrl = `${window.location.origin}/${locale}?${query}`;
-    setGeneratedUrl(fullUrl);
-
-    navigator.clipboard.writeText(fullUrl)
-      .then(() => toast.success('Der Link wurde in die Zwischenablage kopiert!'))
-      .catch(() => toast.error('Link konnte nicht kopiert werden'));
+    if (response.ok) {
+      const result = await response.json();
+      if (result) {
+        const fullUrl = `${window.location.origin}/${locale}?company=${result.hash}`;
+        setGeneratedUrl(fullUrl);
+        navigator.clipboard.writeText(fullUrl)
+          .then(() => toast.success('Der Link wurde in die Zwischenablage kopiert!'))
+          .catch(() => toast.error('Link konnte nicht kopiert werden'));
+      }
+    } else {
+      toast.error(response.statusText || 'Fehler beim Erstellen des Links');
+    }
   };
 
   return (
@@ -76,24 +73,42 @@ export default function SetupForm() {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          <Checkbox
+        <div>
+          <Label htmlFor="doubleEntry">Buchhaltungsart</Label>
+          <select
             id="doubleEntry"
-            checked={watch('doubleEntry')}
-            onChange={(e) => {
-              setValue('doubleEntry', e.target.checked);
-            }}
-          />
-          <Label htmlFor="doubleEntry">Doppelte Buchhaltung</Label>
+            {...register('doubleEntry')}
+            className="w-full border rounded p-2"
+            defaultValue="true"
+          >
+            <option value="true">Doppelte Buchhaltung</option>
+            <option value="false">Einfache Buchhaltung</option>
+          </select>
+          {errors.doubleEntry && (
+            <p className="text-sm text-red-600 mt-1">{errors.doubleEntry.message}</p>
+          )}
         </div>
 
-        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">Link für den neuen Klienten erstellen</Button>
+        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+          Link für den neuen Klienten erstellen
+        </Button>
       </form>
 
       {generatedUrl && (
-        <div className="mt-4 p-4 border rounded bg-muted text-sm break-all">
-          <p className="font-medium">Link für den neuen Klienten:</p>
-          <p>{generatedUrl}</p>
+        <div className="mt-4 p-4 border rounded bg-muted text-sm">
+          <p className="font-medium mb-2">Link für den neuen Klienten:</p>
+          <div className="flex items-center gap-2">
+            <Input readOnly value={generatedUrl} className="flex-1" />
+            <Button
+              type="button"
+              onClick={() =>
+                navigator.clipboard.writeText(generatedUrl)
+                  .then(() => toast.success('Link kopiert!'))
+                  .catch(() => toast.error('Kopieren fehlgeschlagen'))}
+            >
+              Kopieren
+            </Button>
+          </div>
         </div>
       )}
     </div>

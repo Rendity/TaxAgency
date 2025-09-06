@@ -46,7 +46,7 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
           value: 'DE89370400440532013001',
         },
       ],
-      filingCategories: ['Kaufverträge', 'India', 'USA', 'Germany'],
+      // filingCategories: ['Kaufverträge', 'India', 'USA', 'Germany'],
       payrollAccounting: 'No',
       agmSettlements: 'No',
       // person: [
@@ -83,9 +83,6 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
     register,
     trigger,
   } = methods;
-  // setValue('clientId', client);
-  // setValue('companyName', company);
-  // setValue('doubleEntry', doubleEntry);
 
   useEffect(() => {
     setValue('clientId', client);

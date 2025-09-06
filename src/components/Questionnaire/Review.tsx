@@ -20,6 +20,9 @@ const Review: FC<Props> = ({ steps, onSubmit, isSubmitting }) => {
 
       <div className="space-y-6">
         {steps.map((step, stepIdx) => {
+          if (step.id === 0) {
+            return null;
+          }
           return (
             <div key={stepIdx} className="relative border border-gray-300 rounded-lg p-6 bg-white shadow-sm mt-6">
               {/* Step Title as a Legend */}
@@ -32,7 +35,27 @@ const Review: FC<Props> = ({ steps, onSubmit, isSubmitting }) => {
                 {step.fields.map((field) => {
                   const userValue = data[field.name];
                   if (userValue === undefined || userValue === null || field.name === 'iban') {
-                    return null;
+                    if (field.name === 'filingCategories') {
+                      return (
+                        <div
+                          key={field.name}
+                          className="grid grid-cols-8 gap-2 items-start text-sm text-gray-700 pb-2"
+                        >
+                          <span
+                            className="col-span-7 font-medium text-justify"
+                            // eslint-disable-next-line react-dom/no-dangerously-set-innerhtml
+                            dangerouslySetInnerHTML={{
+                              __html: field.description ?? step.description ?? '',
+                            }}
+                          />
+                          <span className="col-span-1 text-center text-gray-700 font-semibold text-lg">
+                            Nein
+                          </span>
+                        </div>
+                      );
+                    } else {
+                      return null;
+                    }
                   }
 
                   let displayValue;

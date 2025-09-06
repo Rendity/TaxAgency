@@ -23,9 +23,6 @@ export async function POST(req: NextRequest) {
     if (payload) {
       const data = await extendedSchema.parseAsync(payload) as QuestionnaireDataType;
       const result = await processNextCloud(data);
-      // if (result) {
-      //   logger.info(result, 'Questionnaire created successfully:');
-      // }
       return NextResponse.json(result);
     }
   } catch (e) {

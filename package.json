@@ -20,6 +20,7 @@
     "test:e2e": "playwright test",
     "commit": "cz",
     "db:generate": "drizzle-kit generate",
+    "db:migrate:dev": "cross-env NODE_ENV=development dotenv -e .env -- drizzle-kit migrate",
     "db:migrate": "dotenv -c production -- drizzle-kit migrate",
     "db:studio": "dotenv -c production -- drizzle-kit studio",
     "storybook": "storybook dev -p 6006",

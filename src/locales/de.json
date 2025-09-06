@@ -81,6 +81,10 @@
     "text_yes": "Ja",
     "text_no": "Nein",
     "text_camt": "Nein, da Camt.053",
+    "step0": {
+      "title": "Welcome",
+      "description": "Detail on step 0"
+    },
     "step1": {
       "title": "User Accounts",
       "description": "Erfassung der Anmeldedaten für Ihre(n) NextCloud Account(s): ",
