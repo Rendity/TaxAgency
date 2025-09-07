@@ -5,11 +5,13 @@ import type { Field, QuestionnaireProps } from './types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 import { formSchema as getFormSchema } from './formSchema';
 import Review from './Review';
 import Sidebar from './Sidebar';
 import StepForm from './StepForm';
 import ThankYou from './ThankYou';
+import { toast } from 'react-toastify';
 
 export default function Questionnaire({ steps, client, company, doubleEntry }: QuestionnaireProps) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -96,17 +98,16 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
     setValue('doubleEntry', doubleEntry);
   }, [client, company, doubleEntry, setValue]);
 
-  const onSubmit = async (data: z.infer<typeof schema>) => {
+  const onSubmit: SubmitHandler<z.infer<typeof schema>> = async (data) => {
     try {
       setIsSubmitting(true);
+
       data.creditCards = data.creditCards?.map((card: { value: string }) => ({
         value: card.value.replace(/\s+/g, ''),
       }));
-      data.ibans = data.ibans?.map((card: { value: string }) => ({
-        value: card.value.replace(/\s+/g, ''),
+      data.ibans = data.ibans?.map((iban: { value: string }) => ({
+        value: iban.value.replace(/\s+/g, ''),
       }));
-
-      setSubmitted(true);
 
       const response = await fetch('/api/questionnaire', {
         method: 'POST',
@@ -116,14 +117,17 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
 
       const result = await response.json();
 
-      if (response.ok) {
-        setSubmitted(true);
-        // Optionally redirect or show success
+      if (!response.ok) {
+        toast.error(result?.message || response.statusText || 'Etwas ist schief gelaufen');
       } else {
-        console.error('Error:', result.message);
+        setSubmitted(true);
+        toast.success('Fragebogen erfolgreich übermittelt!');
       }
-    } catch (err) {
+    } catch (err: any) {
+      toast.error(err?.message || 'Unerwarteter Fehler');
       console.error('Unexpected error:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -185,7 +189,22 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
                 />
               )
             : (
-                <Review steps={steps} isSubmitting={isSubmitting} onSubmit={handleSubmit(onSubmit)} />
+                <Review
+                  steps={steps}
+                  isSubmitting={isSubmitting}
+                  onSubmit={handleSubmit(
+                    onSubmit,
+                    (formErrors) => {
+                      console.error('❌ Zod validation failed:', formErrors);
+                      // show a toast for each error
+                      Object.values(formErrors).forEach((err) => {
+                        if (err?.message) {
+                          toast.error(err.message);
+                        }
+                      });
+                    },
+                  )}
+                />
               )}
         </FormProvider>
       </div>

@@ -425,16 +425,13 @@ export async function processNextCloud(data: QuestionnaireDataType) {
   // Find or Create Group
   for (const account of accounts) {
     operations.setAccount(account);
-    const response = await operations.createNextcloudUser().catch((err) => {
+    await operations.createNextcloudUser().catch((err) => {
       console.error('Error creating Nextcloud user:', err);
       return false;
     }).then((bool) => {
       return bool;
     });
-    if (response) {
-      // ASSIGN USER TO GROUP
-      await operations.assignGroup(groupName);
-    }
+    await operations.assignGroup(groupName);
   }
   return await saveQuestionnaire(data);
 }
