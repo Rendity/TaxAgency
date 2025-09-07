@@ -27,6 +27,7 @@ export const getStepsData = async (locale: string, doubleEntry: boolean): Promis
           type: 'message',
           description: (
             <div className="mt-4 space-y-2">
+              <div className="text-gray-800 font-medium mb-1">{t('step0.more_info_heading')}</div>
               <a
                 href="/assets/documents/NC_Leitfaden-Digitaler-Belegaustausch_doppelte-Buchhaltung.pdf"
                 target="_blank"

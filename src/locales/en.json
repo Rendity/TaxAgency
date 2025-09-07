@@ -87,9 +87,10 @@
     "text_no": "No",
     "text_camt": "No, because Camt.053",
     "step0": {
-      "title": "Welcome",
-      "description": "Detail on step 0",
-      "body": "Body"
+      "title": "Welcome at ABG",
+      "description": "This is the questionnaire for the digital document exchange",
+      "body": "In the following we will guide you through the questionnaire and explain the offered services so that the appropriate storage and folder structure can be created. Please answer all questions, even if there are uncertainties. All information can of course be changed and adjusted at a later date.",
+      "more_info_heading": "More information about digital document exchange:"
     },
     "step1": {
       "title": "Account",

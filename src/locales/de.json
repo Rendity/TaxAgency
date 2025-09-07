@@ -82,9 +82,10 @@
     "text_no": "Nein",
     "text_camt": "Nein, da Camt.053",
     "step0": {
-      "title": "Welcome",
-      "description": "Detail on step 0",
-      "body": "Body"
+      "title": "Willkommen bei der ABG",
+      "description": "Dies ist der Fragebogen zum digitalen Belegaustausch",
+      "body": "Im folgenden führen wir Sie durch den Fragebogen und erklären die angebotenen Leistungen, damit die für Sie passende Ablage- und Ordnerstruktur angelegt werden kann. Bitte beantworten Sie alle Fragen, auch wenn Unklarheiten bestehen. Sämtliche Angaben können selbstverständlich nachträglich abgeändert und angepasst werden.",
+      "more_info_heading": "Weitere Informationen zum digitalen Belegaustausch:"
     },
     "step1": {
       "title": "User Accounts",
