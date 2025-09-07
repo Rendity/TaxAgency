@@ -10,7 +10,7 @@ type SidebarProps = {
 export default function Sidebar({ steps, currentStep, completedSteps, onStepClick }: SidebarProps) {
   return (
     <div className="w-16 sm:w-64">
-      <ul className="space-y-2 sm:space-y-4">
+      <ul className="space-y-0">
         {steps.map((step, index) => {
           const isCompleted = completedSteps.includes(index);
           const isActive = currentStep === index;

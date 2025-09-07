@@ -26,25 +26,32 @@ export const getStepsData = async (locale: string, doubleEntry: boolean): Promis
           name: 'messageLinks',
           type: 'message',
           description: (
-            <div className="mt-4 space-y-2">
-              <div className="text-gray-800 font-medium mb-1">{t('step0.more_info_heading')}</div>
-              <a
-                href="/assets/documents/NC_Leitfaden-Digitaler-Belegaustausch_doppelte-Buchhaltung.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline"
-              >
-                Leitfaden: Digitaler Belegaustausch (Doppelte Buchhaltung) – PDF
-              </a>
-              <br />
-              <a
-                href="/assets/documents/NC_Leitfaden-Digitaler-Belegaustausch_Einnahmen-Ausgaben-Rechnung.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline"
-              >
-                Leitfaden: Digitaler Belegaustausch (Einnahmen-Ausgaben-Rechnung) – PDF
-              </a>
+            <div className="mt-4">
+              <div className="mb-3">{t('step0.more_info_heading')}</div>
+              <div className="flex flex-col items-start gap-3">
+                <a
+                  href="/assets/documents/NC_Leitfaden-Digitaler-Belegaustausch_doppelte-Buchhaltung.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-fit items-center gap-2 px-4 py-3 rounded-md border border-gray-200 bg-white shadow-sm hover:shadow-md hover:bg-gray-50 text-blue-700 hover:text-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                  <span>Leitfaden: Doppelte Buchhaltung</span>
+                </a>
+                <a
+                  href="/assets/documents/NC_Leitfaden-Digitaler-Belegaustausch_Einnahmen-Ausgaben-Rechnung.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-fit items-center gap-2 px-4 py-3 rounded-md border border-gray-200 bg-white shadow-sm hover:shadow-md hover:bg-gray-50 text-blue-700 hover:text-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                  <span>Leitfaden: Einnahmen-Ausgaben-Rechnung</span>
+                </a>
+              </div>
             </div>
           ),
         },

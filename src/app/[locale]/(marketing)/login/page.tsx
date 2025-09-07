@@ -19,19 +19,19 @@ export default function SetupLoginPage() {
       document.cookie = `setup_auth=true; path=/; max-age=${60 * 60 * 2}`; // valid for 2h
       router.push(redirectPath);
     } else {
-      setError('Wrong password');
+      setError('Falsches Passwort');
     }
   };
 
   return (
     <div className="max-w-sm mx-auto mt-20">
-      <h1 className="text-xl font-bold mb-4">Setup Login</h1>
+      <h1 className="text-xl font-bold mb-4">Setup - Digitaler Belegaustausch</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          placeholder="Enter password"
+          placeholder="Passwort eingeben"
           className="w-full border p-2 rounded"
         />
         {error && <p className="text-red-600">{error}</p>}
