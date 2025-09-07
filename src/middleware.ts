@@ -28,6 +28,12 @@ const isSetupRoute = createRouteMatcher([
   '/:locale/setup/(.*)',
 ]);
 
+const isRootRoute = createRouteMatcher([
+  '/',
+  '/en',
+  '/de',
+]);
+
 // Improve security with Arcjet
 const aj = arcjet.withRule(
   detectBot({
@@ -59,6 +65,22 @@ export default async function middleware(
     || path === '/sitemap.xml'
     || path === '/robots.txt'
   ) {
+    return NextResponse.next();
+  }
+
+  if (isRootRoute(request)) {
+    const url = request.nextUrl.clone();
+    const locale = url.pathname.split('/')[1] || 'de';
+    const companyHash = url.searchParams.get('company');
+    const company = request.nextUrl.searchParams.get('company');
+    console.warn(`difference between direct catch and clone `, companyHash, company);
+
+    if (!companyHash) {
+      url.pathname = `/${locale}/setup`;
+      url.search = ''; // clear query params
+      return NextResponse.redirect(url);
+    }
+
     return NextResponse.next();
   }
 

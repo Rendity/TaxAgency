@@ -1,9 +1,9 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 
-export default function SetupLoginPage() {
+function SetupLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [password, setPassword] = useState('');
@@ -11,12 +11,10 @@ export default function SetupLoginPage() {
 
   const redirectPath = searchParams.get('redirect') || '/setup';
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (password === process.env.NEXT_PUBLIC_SETUP_PASSWORD) {
-      // ✅ Set auth cookie
-      document.cookie = `setup_auth=true; path=/; max-age=${60 * 60 * 2}`; // valid for 2h
+      document.cookie = `setup_auth=true; path=/; max-age=${60 * 60 * 2}`;
       router.push(redirectPath);
     } else {
       setError('Falsches Passwort');
@@ -43,5 +41,13 @@ export default function SetupLoginPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function SetupLoginPage() {
+  return (
+    <Suspense fallback={<p>Loading…</p>}>
+      <SetupLoginForm />
+    </Suspense>
   );
 }

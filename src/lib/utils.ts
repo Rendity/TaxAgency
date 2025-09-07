@@ -1,6 +1,7 @@
 import type { ClassValue } from 'clsx';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import type { SetupFormValues } from '@/app/api/setup/model';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -35,4 +36,21 @@ export function generateRandomPassword(length = 10): string {
   }
 
   return required.join('');
+}
+
+export async function getCompanyData(hash: string): Promise<SetupFormValues | null> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://start.abgwt.at';
+    const res = await fetch(`${baseUrl}/api/setup?hash=${encodeURIComponent(hash)}`, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      return null;
+    }
+    return res.json();
+  } catch (err) {
+    console.error('Error fetching company data:', err);
+    return null;
+  }
 }
