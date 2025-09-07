@@ -21,6 +21,32 @@ export const getStepsData = async (locale: string, doubleEntry: boolean): Promis
           type: 'message',
           description: t('step0.body'),
         },
+        {
+          label: t('step0.title'),
+          name: 'messageLinks',
+          type: 'message',
+          description: (
+            <div className="mt-4 space-y-2">
+              <a
+                href="/assets/documents/NC_Leitfaden-Digitaler-Belegaustausch_doppelte-Buchhaltung.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
+                Leitfaden: Digitaler Belegaustausch (Doppelte Buchhaltung) – PDF
+              </a>
+              <br />
+              <a
+                href="/assets/documents/NC_Leitfaden-Digitaler-Belegaustausch_Einnahmen-Ausgaben-Rechnung.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
+                Leitfaden: Digitaler Belegaustausch (Einnahmen-Ausgaben-Rechnung) – PDF
+              </a>
+            </div>
+          ),
+        },
       ],
     },
     {

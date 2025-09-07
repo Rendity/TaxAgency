@@ -1,4 +1,5 @@
 // import type { UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import type { ReactNode } from 'react';
 
 export type FieldType
   = | 'text'
@@ -59,7 +60,7 @@ export type Field = {
   options?: OptionType[];
   fields?: Field[];
   extraOptions?: OptionType[];
-  description?: string;
+  description?: string | ReactNode;
   validation?: ValidationRules;
 };
 
