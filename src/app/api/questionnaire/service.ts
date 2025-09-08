@@ -23,6 +23,20 @@ class NextCloudOperations {
     this.password = '';
   }
 
+  private async timedFetch(label: string, url: string, options?: RequestInit) {
+    const start = Date.now();
+    try {
+      const res = await fetch(url, options);
+      const duration = Date.now() - start;
+      console.warn(`⏱️ ${label} → ${duration}ms (status: ${res.status})`);
+      return res;
+    } catch (err) {
+      const duration = Date.now() - start;
+      console.error(`❌ ${label} failed after ${duration}ms`, err);
+      throw err;
+    }
+  }
+
   public setAccount(account: Record<string, any>) {
     this.account = account;
     this.password = generateRandomPassword(12);
@@ -35,20 +49,32 @@ class NextCloudOperations {
       displayName: `${this.account.firstName} ${this.account.lastName}`,
       email: this.account.email,
     });
+
+    const url = `${process.env.NEXTCLOUD_BASE_URL}/ocs/v1.php/cloud/users`;
+
+    const myHeaders = new Headers();
+    myHeaders.append('OCS-APIRequest', 'true');
+    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
+    myHeaders.append('Authorization', this.NEXTCLOUD_AUTH);
+
+    const requestOptions: RequestInit = {
+      method: 'POST',
+      headers: myHeaders,
+      redirect: 'follow',
+      body: payload,
+    };
     try {
-      const res = await fetch(`${process.env.NEXTCLOUD_BASE_URL}/ocs/v1.php/cloud/users`, {
-        method: 'POST',
-        headers: {
-          'Authorization': this.NEXTCLOUD_AUTH,
-          'OCS-APIRequest': 'true',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: payload,
-      });
-      const text = await res.text();
-      if (!res.ok && res.status !== 200) {
-        throw new Error(`Failed to create user: ${text}`);
+      const response = await this.timedFetch(
+        `createUser(${this.account.email})`,
+        url,
+        requestOptions,
+      );
+
+      if (!response.ok) {
+        console.warn('unable to create user', response);
+        throw new Error(`Failed to create user: ${response.status} ${response.statusText}`);
       }
+      const text = await response.text();
       // Parse the XML to JSON
       const json = await parseStringPromise(text);
       const users = json?.ocs?.data?.[0]?.id || [];
@@ -57,7 +83,6 @@ class NextCloudOperations {
           return email.toLowerCase() === this.account.email.toLowerCase();
         });
         if (found.length > 0) {
-          await this.createFolder('');
           return true;
         }
       }
@@ -69,23 +94,31 @@ class NextCloudOperations {
   };
 
   public async getUserGroups(userId: string) {
-    const res = await fetch(
-      `${process.env.NEXTCLOUD_BASE_URL}/ocs/v1.php/cloud/users/${encodeURIComponent(userId)}/groups`,
-      {
-        method: 'GET',
-        headers: {
-          'Authorization': this.NEXTCLOUD_AUTH as string, // e.g. "Basic base64(admin:app-password)"
-          'OCS-APIRequest': 'true',
-          'Accept': 'application/json', // optional, makes response JSON instead of XML
-        },
-      },
+    const url = `${process.env.NEXTCLOUD_BASE_URL}/ocs/v1.php/cloud/users/${encodeURIComponent(userId)}/groups`;
+
+    const myHeaders = new Headers();
+    myHeaders.append('OCS-APIRequest', 'true');
+    myHeaders.append('Accept', 'application/json');
+    myHeaders.append('Authorization', this.NEXTCLOUD_AUTH);
+
+    const requestOptions: RequestInit = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
+
+    const response = await this.timedFetch(
+      `getUserGroups(${userId})`,
+      url,
+      requestOptions,
     );
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch groups: ${res.status} ${res.statusText}`);
+    if (!response.ok) {
+      console.warn('unable to fetch groups', response);
+      throw new Error(`Failed to fetch groups: ${response.status} ${response.statusText}`);
     }
 
-    const data = await res.json();
+    const data = await response.json();
     // groups are inside data.ocs.data.groups
     return data.ocs.data.groups;
   };
@@ -94,17 +127,25 @@ class NextCloudOperations {
     const data = new URLSearchParams({
       search: email,
     });
-    const res = await fetch(`${process.env.NEXTCLOUD_BASE_URL}/ocs/v1.php/cloud/users?${data}`, {
+    const url = `${process.env.NEXTCLOUD_BASE_URL}/ocs/v1.php/cloud/users?${data}`;
+    const requestOptions: RequestInit = {
       method: 'GET',
       headers: {
         'Authorization': this.NEXTCLOUD_AUTH,
         'OCS-APIRequest': 'true',
       },
-    });
-    const text = await res.text();
-    if (!res.ok && res.status !== 200) {
-      throw new Error(`Failed to search user: ${text}`);
+    };
+    const response = await this.timedFetch(
+      `searchUser(${email})`,
+      url,
+      requestOptions,
+    );
+    if (!response.ok) {
+      console.warn('unable to search user', response);
+      throw new Error(`Failed to search user: ${response.status} ${response.statusText}`);
     }
+
+    const text = await response.text();
 
     // Parse the XML to JSON
     const json = await parseStringPromise(text);
@@ -140,24 +181,24 @@ class NextCloudOperations {
       preappend = `${this.encodePath(fullPath)}/`;
     }
     const url = `${baseUrl}${preappend}`;
-    // console.warn(`Creating folder "${url}"`);
-    const myHeaders = new Headers();
-    myHeaders.append('Authorization', this.NEXTCLOUD_AUTH);
     const requestOptions: RequestInit = {
       method: 'MKCOL',
-      headers: myHeaders,
+      headers: {
+        Authorization: this.NEXTCLOUD_AUTH,
+      },
       redirect: 'follow' as RequestRedirect,
     };
-    try {
-      const res = await fetch(url, requestOptions);
-      if (res.status !== 201 && res.status !== 405) {
-        console.warn(`Failed to create folder "${url}"`);
-        return false;
-      }
+
+    const response = await this.timedFetch(
+      `createFolder(${fullPath})`,
+      url,
+      requestOptions,
+    );
+    if (response.ok && (response.status === 201 || response.status === 405)) {
+      console.warn('folder created successfully');
       return true;
-    } catch (e) {
-      console.warn(e);
     }
+    console.warn('unable to create folder');
     return false;
   }
 
@@ -180,49 +221,94 @@ class NextCloudOperations {
   }
 
   public async shareFolderWithGroup(FOLDER_PATH: string, groupName: string) {
-    await fetch(
-      `${process.env.NEXTCLOUD_BASE_URL}/ocs/v2.php/apps/files_sharing/api/v1/shares`,
-      {
-        method: 'POST',
-        headers: {
-          'OCS-APIRequest': 'true',
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': this.NEXTCLOUD_AUTH,
-        },
-        body: new URLSearchParams({
-          path: `/${this.rootClientFolder}/${FOLDER_PATH}`,
-          shareType: '1', // 0 = user, 1 = group, 3 = public link
-          shareWith: groupName,
-          permissions: '31', // full permissions (read/write/create/delete/share)
-        }),
+    const url = `${process.env.NEXTCLOUD_BASE_URL}/ocs/v2.php/apps/files_sharing/api/v1/shares`;
+    const urlencoded = new URLSearchParams({
+      path: `/${this.rootClientFolder}/${FOLDER_PATH}`,
+      shareType: '1',
+      shareWith: groupName,
+      permissions: '31',
+    });
+    const requestOptions: RequestInit = {
+      method: 'POST',
+      headers: {
+        'OCS-APIRequest': 'true',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': this.NEXTCLOUD_AUTH,
       },
+      body: urlencoded,
+      redirect: 'follow',
+    };
+
+    const response = await this.timedFetch(
+      `shareFolder(${`/${this.rootClientFolder}/${FOLDER_PATH}`}) with group(${groupName})`,
+      url,
+      requestOptions,
     );
+    if (response.ok) {
+      console.warn('shared folder with group successfully');
+    } else {
+      console.warn('unable to share folder with group');
+    }
   }
 
   public async createGroup(groupName: string) {
-    const url = `${process.env.NEXTCLOUD_BASE_URL}/ocs/v1.php/cloud/groups`;
-    await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': this.NEXTCLOUD_AUTH,
-        'OCS-APIRequest': 'true',
-        'Accept': 'application/json',
-      },
-      body: `groupid=${encodeURIComponent(groupName)}`,
+    const url = `${process.env.NEXTCLOUD_BASE_URL}/ocs/v2.php/cloud/groups`;
+
+    const myHeaders = new Headers();
+    myHeaders.append('OCS-APIRequest', 'true');
+    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
+    myHeaders.append('Authorization', this.NEXTCLOUD_AUTH);
+
+    const urlencoded = new URLSearchParams({
+      groupid: groupName,
     });
+
+    const requestOptions: RequestInit = {
+      method: 'POST',
+      headers: myHeaders,
+      body: urlencoded,
+      redirect: 'follow',
+    };
+
+    const response = await this.timedFetch(
+      `createGroup(${groupName})`,
+      url,
+      requestOptions,
+    );
+
+    if (!response.ok) {
+      console.warn('unable to create group', response);
+    }
   }
 
   public async assignGroup(groupName: string) {
     const url = `${process.env.NEXTCLOUD_BASE_URL}/ocs/v1.php/cloud/users/${encodeURIComponent(this.account.email)}/groups`;
-    await fetch(url, {
+
+    const urlencoded = new URLSearchParams({
+      groupid: groupName,
+    });
+
+    const requestOptions: RequestInit = {
       method: 'POST',
       headers: {
         'Authorization': this.NEXTCLOUD_AUTH,
         'OCS-APIRequest': 'true',
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: `groupid=${encodeURIComponent(groupName)}`,
-    });
+      body: urlencoded,
+      redirect: 'follow',
+    };
+
+    const response = await this.timedFetch(
+      `assignGroup(${groupName}) to (${this.account.email})`,
+      url,
+      requestOptions,
+    );
+    if (response.ok) {
+      console.warn(`assigned succesfully`);
+    } else {
+      console.warn(`unable to assign group to user.`);
+    }
   }
 
   public async processFolders(groupName: string, doubleEntry: boolean, folderTree: FolderNode[] = [], ablageTree: FolderNode[] = []) {
