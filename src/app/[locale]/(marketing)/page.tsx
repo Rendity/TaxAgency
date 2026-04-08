@@ -37,13 +37,14 @@ export default async function Index({ params, searchParams }: IIndexProps) {
 
   setRequestLocale(locale);
 
-  const steps = await getStepsData(locale, companyData.doubleEntry === 'true');
+  const steps = await getStepsData(locale, companyData.doubleEntry === 'true', companyData.companyType);
 
   return (
     <Questionnaire
       client={Number(companyData.clientId)}
       company={String(companyData.companyName)}
       doubleEntry={companyData.doubleEntry === 'true'}
+      companyType={companyData.companyType}
       steps={steps}
     />
   );

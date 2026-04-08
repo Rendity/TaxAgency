@@ -3,7 +3,9 @@ import React from 'react';
 import { CreditCardField } from './Fields/CreditCard';
 import { DynamicCheckboxDropdownField } from './Fields/DynamicCheckbox';
 import { IBANField } from './Fields/IBAN';
+import { PaymentProvidersField } from './Fields/PaymentProviders';
 import { PersonField } from './Fields/PersonField';
+import { CashDeskSystemField } from './Fields/CashDeskSystem';
 import RadioField from './Fields/RadioField';
 import TextField from './Fields/TextField';
 
@@ -37,16 +39,40 @@ export default function FieldRenderer({
       return (
         <PersonField fields={field.fields ?? []} name={field.name} />
       );
+    case 'paymentProviders':
+      return (
+        <PaymentProvidersField
+          name={field.name}
+          label={field.label}
+          translations={field.translations}
+        />
+      );
     case 'iban':
       return (
         <IBANField
           name={field.name}
+          triggerField={field.triggerField}
+          triggerValue={field.triggerValue}
+          addLabel={field.addLabel}
+          withAdvisor={field.withAdvisor}
+          advisorNameLabel={field.advisorNameLabel}
+          advisorContactLabel={field.advisorContactLabel}
         />
       );
     case 'creditcard':
       return (
         <CreditCardField
           name={field.name}
+        />
+      );
+    case 'cashDeskSystem':
+      return (
+        <CashDeskSystemField
+          name={field.name}
+          value={value}
+          onChange={onChange}
+          translations={field.translations}
+          errors={errors?.[field.name] as Record<string, { message?: string }> | undefined}
         />
       );
     case 'text':

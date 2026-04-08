@@ -65,12 +65,29 @@ export default function SetupForm() {
           )}
         </div>
 
-        <div>
-          <Label htmlFor="companyName">Firmenname</Label>
-          <Input id="companyName" {...register('companyName')} />
-          {errors.companyName && (
-            <p className="text-sm text-red-600 mt-1">{errors.companyName.message}</p>
-          )}
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <Label htmlFor="companyName">Firmenname</Label>
+            <Input id="companyName" {...register('companyName')} />
+            {errors.companyName && (
+              <p className="text-sm text-red-600 mt-1">{errors.companyName.message}</p>
+            )}
+          </div>
+
+          <div className="flex-1">
+            <Label htmlFor="companyType">Gesellschaftsform</Label>
+            <select
+              id="companyType"
+              {...register('companyType')}
+              className="w-full border rounded p-2"
+            >
+              <option value="Kapitalgesellschaft">Kapitalgesellschaft</option>
+              <option value="Einzelunternehmen">Einzelunternehmen</option>
+            </select>
+            {errors.companyType && (
+              <p className="text-sm text-red-600 mt-1">{errors.companyType.message}</p>
+            )}
+          </div>
         </div>
 
         <div>

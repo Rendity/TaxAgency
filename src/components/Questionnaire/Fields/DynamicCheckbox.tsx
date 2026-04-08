@@ -1,157 +1,166 @@
 /* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
 import type { FieldRendererProps } from '../types';
-import { useEffect, useMemo, useState } from 'react';
+import { Info, Plus } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 export const DynamicCheckboxDropdownField = ({
   field,
   value,
   onChange,
 }: FieldRendererProps) => {
-  const fixedOptions = field.options || [];
-  const extraOptions = useMemo(() => field.extraOptions || [], [field.extraOptions]);
+  const allPredefinedOptions = [
+    ...(field.options || []),
+    ...(field.extraOptions || []),
+  ];
 
   const [selectedValues, setSelectedValues] = useState<string[]>(() =>
     Array.isArray(value) ? value : [],
   );
-  const [availableExtraOptions, setAvailableExtraOptions] = useState(() =>
-    extraOptions.filter(opt => !selectedValues.includes(opt.value)),
-  );
-  const [customInput, setCustomInput] = useState('');
-  const [showCustomInput, setShowCustomInput] = useState(false);
 
-  const OTHER_OPTION_VALUE = '__other__';
+  // Custom entries: values not in any predefined option
+  const [customEntries, setCustomEntries] = useState<string[]>(() =>
+    Array.isArray(value)
+      ? value.filter(v => !allPredefinedOptions.some(opt => opt.value === v))
+      : [],
+  );
+
+  const [showInput, setShowInput] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (Array.isArray(value)) {
       setSelectedValues(value);
-      setAvailableExtraOptions(
-        extraOptions.filter(opt => !value.includes(opt.value)),
+      setCustomEntries(
+        value.filter(v => !allPredefinedOptions.some(opt => opt.value === v)),
       );
     }
-  }, [value, extraOptions]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
-  const handleSelect = (selectedValue: string) => {
-    if (selectedValue === OTHER_OPTION_VALUE) {
-      setShowCustomInput(true);
-      return;
+  useEffect(() => {
+    if (showInput) {
+      inputRef.current?.focus();
     }
+  }, [showInput]);
 
-    const updated = [...selectedValues, selectedValue];
+  const handleCheckboxChange = (optionValue: string, checked: boolean) => {
+    const updated = checked
+      ? [...selectedValues, optionValue]
+      : selectedValues.filter(v => v !== optionValue);
     setSelectedValues(updated);
-    setAvailableExtraOptions(prev =>
-      prev.filter(opt => opt.value !== selectedValue),
-    );
     onChange(updated);
   };
 
-  const handleCheckboxChange = (optionValue: string) => {
-    let updatedSelected: string[];
-    if (selectedValues.includes(optionValue)) {
-      updatedSelected = selectedValues.filter(val => val !== optionValue);
-
-      if (extraOptions.some(opt => opt.value === optionValue)) {
-        const restored = extraOptions.find(opt => opt.value === optionValue);
-        if (restored) {
-          setAvailableExtraOptions(prev => [...prev, restored]);
-        }
-      }
-    } else {
-      updatedSelected = [...selectedValues, optionValue];
-      setAvailableExtraOptions(prev =>
-        prev.filter(opt => opt.value !== optionValue),
-      );
-    }
-
-    setSelectedValues(updatedSelected);
-    onChange(updatedSelected);
-  };
-
-  const handleAddCustom = () => {
-    const trimmed = customInput.trim();
+  const handleAdd = () => {
+    const trimmed = inputValue.trim();
     if (!trimmed || selectedValues.includes(trimmed)) {
+      setInputValue('');
+      setShowInput(false);
       return;
     }
-
     const updated = [...selectedValues, trimmed];
     setSelectedValues(updated);
+    setCustomEntries(prev => [...prev, trimmed]);
     onChange(updated);
-    setCustomInput('');
-    setShowCustomInput(false);
+    setInputValue('');
+    setShowInput(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAdd();
+    }
+    if (e.key === 'Escape') {
+      setInputValue('');
+      setShowInput(false);
+    }
   };
 
   return (
-    <div className="space-y-4">
-      {/* Checkboxes */}
-      <div className="space-y-2">
-        {[...fixedOptions, ...extraOptions.filter(opt => selectedValues.includes(opt.value))].map(
-          option => (
-            <div key={option.value} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id={option.label}
-                checked={selectedValues.includes(option.value)}
-                onChange={() => handleCheckboxChange(option.value)}
-              />
-              <label htmlFor={option.label}>{option.label}</label>
-            </div>
-          ),
-        )}
-
-        {/* Custom user-added values as checkboxes */}
-        {selectedValues
-          .filter(
-            val =>
-              !fixedOptions.some(opt => opt.value === val)
-              && !extraOptions.some(opt => opt.value === val),
-          )
-          .map(val => (
-            <div key={val} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={true}
-                onChange={() => handleCheckboxChange(val)}
-              />
-              <label>{val}</label>
-            </div>
-          ))}
-      </div>
-
-      {/* Always show dropdown */}
-      <select
-        value=""
-        onChange={e => handleSelect(e.target.value)}
-        className="p-2 border rounded-md"
-      >
-        <option value="" disabled>
-          {field.label || 'Add more options...'}
-        </option>
-        {availableExtraOptions.map(opt => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-        <option value={OTHER_OPTION_VALUE}>Andere Auswahl</option>
-      </select>
-
-      {/* Input for Other */}
-      {showCustomInput && (
-        <div className="flex items-center space-x-2">
+    <div className="space-y-2">
+      {/* Predefined options */}
+      {allPredefinedOptions.map(option => (
+        <div key={option.value} className="flex items-center space-x-2">
           <input
-            type="text"
-            value={customInput}
-            onChange={e => setCustomInput(e.target.value)}
-            placeholder="Eigene Kategorie"
-            className="p-2 border rounded-md"
+            type="checkbox"
+            id={`dyncheck-${option.value}`}
+            checked={selectedValues.includes(option.value)}
+            onChange={e => handleCheckboxChange(option.value, e.target.checked)}
           />
-          <button
-            type="button"
-            onClick={handleAddCustom}
-            className="px-3 py-2 bg-blue-500 text-white rounded"
-          >
-            Hinzufügen
-          </button>
+          <label htmlFor={`dyncheck-${option.value}`} className="cursor-pointer">
+            {option.label}
+          </label>
+          {option.tooltip && (
+            <span className="group relative inline-flex">
+              <Info className="w-4 h-4 text-gray-400 cursor-help" />
+              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                {option.tooltip}
+              </span>
+            </span>
+          )}
         </div>
-      )}
+      ))}
+
+      {/* Custom user-added entries */}
+      {customEntries.map(entry => (
+        <div key={entry} className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id={`dyncheck-custom-${entry}`}
+            checked={selectedValues.includes(entry)}
+            onChange={e => handleCheckboxChange(entry, e.target.checked)}
+          />
+          <label htmlFor={`dyncheck-custom-${entry}`} className="cursor-pointer">
+            {entry}
+          </label>
+        </div>
+      ))}
+
+      {/* Add custom entry */}
+      {showInput
+        ? (
+            <div className="flex items-center space-x-2 pt-1">
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputValue}
+                onChange={e => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Kategorie eingeben"
+                className="p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <Button
+                type="button"
+                onClick={handleAdd}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Hinzufügen
+              </Button>
+              <button
+                type="button"
+                onClick={() => {
+                  setInputValue('');
+                  setShowInput(false);
+                }}
+                className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700"
+              >
+                Abbrechen
+              </button>
+            </div>
+          )
+        : (
+            <Button
+              type="button"
+              onClick={() => setShowInput(true)}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Weitere Kategorien hinzufügen
+            </Button>
+          )}
     </div>
   );
 };

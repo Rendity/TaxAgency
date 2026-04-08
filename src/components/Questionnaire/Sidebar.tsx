@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react';
 
 type SidebarProps = {
-  steps: { title: string }[];
+  steps: { title: string; sidebarTitle?: string }[];
   currentStep: number;
   completedSteps: number[];
   onStepClick: (index: number) => void;
@@ -48,7 +48,7 @@ export default function Sidebar({ steps, currentStep, completedSteps, onStepClic
                   </span>
                 </div>
 
-                <span className="text-sm hidden sm:inline-block leading-none">{step.title}</span>
+                <span className="text-sm hidden sm:inline-block leading-none">{step.sidebarTitle ?? step.title}</span>
               </button>
             </li>
           );

@@ -13,16 +13,19 @@ import StepForm from './StepForm';
 import ThankYou from './ThankYou';
 import { toast } from 'react-toastify';
 
-export default function Questionnaire({ steps, client, company, doubleEntry }: QuestionnaireProps) {
+type FormData = z.infer<ReturnType<typeof getFormSchema>>;
+
+export default function Questionnaire({ steps, client, company, doubleEntry, companyType }: QuestionnaireProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationAttempted, setValidationAttempted] = useState(false);
 
   const schema = useMemo<ReturnType<typeof getFormSchema>>(
-    () => getFormSchema(`${client}_${company}`),
+    () => getFormSchema(`${client}_${company}`, companyType, doubleEntry),
 
-    [client, company],
+    [client, company, companyType, doubleEntry],
   );
 
   const methods = useForm({
@@ -132,17 +135,30 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
   };
 
   const nextStep = async () => {
-    const fieldNames = steps[currentStep]?.fields.map((f: Field) => f.name) as (keyof typeof schema._def.schema.shape)[];
+    // Get field names for current step
+    const fieldNames = steps[currentStep]?.fields.map((f: Field) => f.name) as (keyof FormData)[];
 
-    const valid = await trigger(fieldNames); // Validate current fields
-    if (valid) {
+    // First validate current step's fields
+    await trigger(fieldNames);
+
+    // Then run full validation to trigger schema-level refinements
+    await methods.trigger();
+
+    // Check if there are any validation errors for the current step's fields
+    const currentStepErrors = fieldNames.some(fieldName => !!errors[fieldName as keyof typeof errors]);
+
+    if (!currentStepErrors) {
+      // No errors - proceed to next step
       const newStep = currentStep + 1;
       setCurrentStep(newStep);
-      // setCurrentStep(12);
+      setValidationAttempted(false); // Reset for next step
 
       if (!completedSteps.includes(currentStep)) {
         setCompletedSteps(prev => [...prev, currentStep]);
       }
+    } else {
+      // There are errors - show them by setting validationAttempted to true
+      setValidationAttempted(true);
     }
   };
 
@@ -186,6 +202,7 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
                   onPrevious={previousStep}
                   setValue={setValue}
                   register={register}
+                  validationAttempted={validationAttempted}
                 />
               )
             : (
@@ -195,13 +212,21 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
                   onSubmit={handleSubmit(
                     onSubmit,
                     (formErrors) => {
-                      console.error('❌ Zod validation failed:', formErrors);
-                      // show a toast for each error
-                      Object.values(formErrors).forEach((err) => {
-                        if (err?.message) {
-                          toast.error(err.message);
-                        }
-                      });
+                      const extractMessages = (errors: Record<string, any>): string[] => {
+                        const msgs: string[] = [];
+                        Object.values(errors).forEach((err) => {
+                          if (err?.message && typeof err.message === 'string') {
+                            msgs.push(err.message);
+                          } else if (typeof err === 'object' && err !== null) {
+                            msgs.push(...extractMessages(err));
+                          }
+                        });
+                        return msgs;
+                      };
+                      const messages = extractMessages(formErrors);
+                      toast.error(messages.length > 0
+                        ? messages.join('\n')
+                        : 'Bitte überprüfen Sie Ihre Eingaben.');
                     },
                   )}
                 />

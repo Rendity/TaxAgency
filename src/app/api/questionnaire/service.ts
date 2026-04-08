@@ -369,20 +369,22 @@ function addPathToTree(tree: FolderNode[], path: string[]) {
 }
 
 export async function processNextCloud(data: QuestionnaireDataType) {
-  // Step 2: Build the folder tree
   const folderTree: FolderNode[] = [];
   const ablageTree: FolderNode[] = [];
 
-  // BELONGS TO STEP # 2
+  // Combine IBANs from both bank file paths (camt and manual)
+  const allIbans = [
+    ...(data.ibans || []),
+    ...(data.camtIbans || []),
+  ];
+
+  // --- Payroll (Step 2: Employees) ---
   if (data.payrollAccounting === 'Yes') {
-    // folderTree.push({ name: 'Payroll' });
     addPathToTree(folderTree, ['1_Lohnverrechnung']);
   }
 
   if (data.doubleEntry) {
-    // BELONGS TO STEP # 3
-    // Create each dynamic category as a sibling folder
-    // HOW TO HANDLE DYNAMIC CATEGORIES
+    // --- Filing categories (Step 11: Ablage) ---
     addPathToTree(folderTree, ['2_Ablage']);
     if (data.filingCategories && data.filingCategories.length > 0) {
       data.filingCategories.filter((cat): cat is string => typeof cat === 'string').forEach((cat) => {
@@ -390,111 +392,181 @@ export async function processNextCloud(data: QuestionnaireDataType) {
       });
     }
 
-    // STEP # 4 MANDATORY FOLDER
-    addPathToTree(folderTree, ['3_Ausgangsrechnungen']);
+    // --- Invoices (Step 5: Rechnungen) ---
+    if (data.invoices !== undefined) {
+      // Einzelunternehmen: combined invoices folder
+      addPathToTree(folderTree, ['3_Rechnungen']);
+      if (data.recurringBills === 'Yes') {
+        addPathToTree(folderTree, ['3_Rechnungen', 'Dauerrechnungen']);
+      }
+    } else {
+      // Non-Einzelunternehmen: separate outgoing + incoming
+      addPathToTree(folderTree, ['3_Ausgangsrechnungen']);
+      addPathToTree(folderTree, ['4_Eingangsrechnungen']);
+      if (data.recurringBills === 'Yes') {
+        addPathToTree(folderTree, ['4_Eingangsrechnungen', 'Dauerrechnungen']);
+      }
+    }
 
-    // STEP # 5 OPTIONAL FOLDER
+    // --- AGM Settlements (Step 4) ---
     if (data.agmSettlements === 'Yes') {
       addPathToTree(folderTree, ['7_HV-Abrechnungen']);
     }
 
-    // STEP # 6 MANDATORY FOLDER
-    addPathToTree(folderTree, ['4_Eingangsrechnungen']);
-    // STEP # 6-1 OPTIONAL FOLDER
-    if (data.recurringBills === 'Yes') {
-      addPathToTree(folderTree, ['4_Eingangsrechnungen', 'Dauerrechnungen']);
-    }
-
-    // STEP # 7 OPTIONAL FOLDERS
+    // --- Expense persons (Step 6: Barauslagen) ---
     if (data.person && data.person.length > 0) {
       data.person.forEach((person: { firstName: string; lastName: string }) => {
         addPathToTree(folderTree, ['6_Barauslagen', `${person.firstName} ${person.lastName}`]);
       });
     }
 
-    // STEP # 8 - IBANS
+    // --- Bank / IBANs (Step 3) ---
     addPathToTree(folderTree, ['5_Bank']);
-    if (data.ibans && data.ibans.length > 0) {
-      data.ibans.forEach((iban: { value: string }) => {
+    if (allIbans.length > 0) {
+      allIbans.forEach((iban: { value: string }) => {
         addPathToTree(folderTree, ['5_Bank', formatIBAN(iban.value)]);
       });
     }
 
-    // STEP # 9 - CREDIT CARDS
+    // --- Credit cards (Step 7) ---
     if (data.creditCards && data.creditCards.length > 0) {
       data.creditCards.forEach((cc: { value: string }) => {
         addPathToTree(folderTree, ['8_Kreditkartenabrechnungen', maskCard(cc.value)]);
       });
     }
 
-    // STEP # 10 - PAYPAL
-    if (data.paypal === 'Yes') {
-      addPathToTree(folderTree, ['9_PayPal']);
+    // --- Payment providers (Step 3: replaces old paypal) ---
+    if (data.hasPaymentProviders === 'Yes') {
+      addPathToTree(folderTree, ['9_Zahlungsdienstleister']);
+      if (data.paymentProviders && Array.isArray(data.paymentProviders)) {
+        data.paymentProviders
+          .filter((p: { name: string; checked: boolean }) => p.checked)
+          .forEach((p: { name: string; checked: boolean }) => {
+            addPathToTree(folderTree, ['9_Zahlungsdienstleister', p.name]);
+          });
+      }
     }
-    // STEP # 11 - CASH Register
-    if (data.cashDesk === 'Yes') {
-      addPathToTree(folderTree, ['10_Kassa']);
+
+    // --- Cash register (Step 9: usesRegisterCash replaces cashDesk) ---
+    if (data.usesRegisterCash === 'Yes') {
+      if (data.cashDeskSystem) {
+        const entries = [
+          ...data.cashDeskSystem.selected.filter((s: string) => s !== '__other__'),
+          ...(data.cashDeskSystem.other ? [data.cashDeskSystem.other] : []),
+        ];
+        if (entries.length > 0) {
+          addPathToTree(folderTree, ['10_Kassa']);
+          entries.forEach((system: string) => {
+            addPathToTree(folderTree, ['10_Kassa', system]);
+          });
+        }
+      } else {
+        addPathToTree(folderTree, ['10_Kassa']);
+      }
     }
-    // STEP # 12 - Investory
+
+    // --- Cash balance (Step 8) ---
+    if (data.hasCashBalance === 'Yes' && data.keepsCashBook === 'Yes') {
+      addPathToTree(folderTree, ['10_Kassabuch']);
+    }
+
+    // --- Inventory (Step 10) ---
     if (data.inventory === 'Yes') {
       addPathToTree(folderTree, ['11_Inventur']);
     }
   } else {
-    // BELONGS TO STEP # 3
-    // Create each dynamic category as a sibling folder
-    // HOW TO HANDLE DYNAMIC CATEGORIES
+    // ===================== SINGLE ENTRY =====================
+
+    // --- Filing categories (Ablage) ---
     addPathToTree(ablageTree, ['2_Ablage']);
     if (data.filingCategories && data.filingCategories.length > 0) {
       data.filingCategories.filter((cat): cat is string => typeof cat === 'string').forEach((cat) => {
         addPathToTree(ablageTree, ['2_Ablage', cat]);
       });
     }
-    // STEP # 4
+
+    // --- Bank / IBANs (Step 3) ---
     addPathToTree(folderTree, ['5_Bank']);
-    if (data.ibans && data.ibans.length > 0) {
-      data.ibans.forEach((iban: { value: string }) => {
+    if (allIbans.length > 0) {
+      allIbans.forEach((iban: { value: string }) => {
         addPathToTree(folderTree, ['5_Bank', formatIBAN(iban.value), 'VERBUCHT']);
       });
     }
 
-    // STEP # 5 OPTIONAL FOLDER
+    // --- AGM Settlements (Step 4) ---
     if (data.agmSettlements === 'Yes') {
       addPathToTree(folderTree, ['7_HV-Abrechnungen']);
     }
 
-    // STEP # 6 MANDATORY FOLDER
-    addPathToTree(folderTree, ['4_Rechnungen']);
-    // STEP # 6-1 OPTIONAL FOLDER
-    if (data.recurringBills === 'Yes') {
-      addPathToTree(folderTree, ['4_Rechnungen', 'Dauerrechnungen']);
+    // --- Invoices (Step 5) ---
+    if (data.invoices !== undefined) {
+      // Einzelunternehmen: combined invoices
+      addPathToTree(folderTree, ['4_Rechnungen']);
+      if (data.recurringBills === 'Yes') {
+        addPathToTree(folderTree, ['4_Rechnungen', 'Dauerrechnungen']);
+      }
+    } else {
+      // Non-Einzelunternehmen: incoming invoices
+      addPathToTree(folderTree, ['4_Rechnungen']);
+      if (data.recurringBills === 'Yes') {
+        addPathToTree(folderTree, ['4_Rechnungen', 'Dauerrechnungen']);
+      }
     }
 
-    // STEP # 7 - CREDIT CARDS
+    // --- Credit cards (Step 6) ---
     if (data.creditCards && data.creditCards.length > 0) {
       data.creditCards.forEach((cc: { value: string }) => {
         addPathToTree(folderTree, ['8_Kreditkartenabrechnungen', maskCard(cc.value)]);
       });
     }
 
-    // STEP # 8 - PAYPAL
-    if (data.paypal === 'Yes') {
-      addPathToTree(folderTree, ['9_PayPal']);
-    }
-    // STEP # 9 - CASH
+    // --- Cash receipts (Step 7: single-entry only) ---
     if (data.cashrecipiets === 'Yes') {
       addPathToTree(folderTree, ['12_Barbelege', 'VERBUCHT']);
     }
-    // STEP # 10 - CASH Register
-    if (data.cashDesk === 'Yes') {
-      addPathToTree(folderTree, ['10_Kassa', 'VERBUCHT']);
+
+    // --- Payment providers (Step 3: replaces old paypal) ---
+    if (data.hasPaymentProviders === 'Yes') {
+      addPathToTree(folderTree, ['9_Zahlungsdienstleister']);
+      if (data.paymentProviders && Array.isArray(data.paymentProviders)) {
+        data.paymentProviders
+          .filter((p: { name: string; checked: boolean }) => p.checked)
+          .forEach((p: { name: string; checked: boolean }) => {
+            addPathToTree(folderTree, ['9_Zahlungsdienstleister', p.name]);
+          });
+      }
     }
-    // STEP # 11 - Investory
+
+    // --- Cash register (Step 9: usesRegisterCash replaces cashDesk) ---
+    if (data.usesRegisterCash === 'Yes') {
+      if (data.cashDeskSystem) {
+        const entries = [
+          ...data.cashDeskSystem.selected.filter((s: string) => s !== '__other__'),
+          ...(data.cashDeskSystem.other ? [data.cashDeskSystem.other] : []),
+        ];
+        if (entries.length > 0) {
+          addPathToTree(folderTree, ['10_Kassa', 'VERBUCHT']);
+          entries.forEach((system: string) => {
+            addPathToTree(folderTree, ['10_Kassa', 'VERBUCHT', system]);
+          });
+        }
+      } else {
+        addPathToTree(folderTree, ['10_Kassa', 'VERBUCHT']);
+      }
+    }
+
+    // --- Cash balance (Step 8) ---
+    if (data.hasCashBalance === 'Yes' && data.keepsCashBook === 'Yes') {
+      addPathToTree(folderTree, ['10_Kassabuch', 'VERBUCHT']);
+    }
+
+    // --- Inventory (Step 10) ---
     if (data.inventory === 'Yes') {
       addPathToTree(folderTree, ['11_Inventur']);
     }
   }
 
-  // LOOP THROUGH EACH ACCOUNT AND CREATE A FOLDER FOR EACH
+  // --- Create NextCloud users and folders ---
   const accounts = data.accounts || [];
   if (accounts.length === 0) {
     throw new Error('No accounts provided for Nextcloud operations');
@@ -504,11 +576,8 @@ export async function processNextCloud(data: QuestionnaireDataType) {
   const groupName = `${data.clientId}_${data.companyName}`;
 
   await operations.createGroup(groupName);
-
-  // CREATE FOLDER TREE
   await operations.processFolders(groupName, data.doubleEntry, folderTree, ablageTree);
 
-  // Find or Create Group
   for (const account of accounts) {
     operations.setAccount(account);
     await operations.createNextcloudUser().catch((err) => {

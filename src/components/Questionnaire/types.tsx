@@ -10,7 +10,9 @@ export type FieldType
     | 'creditcard'
     | 'person'
     | 'message'
-    | 'multiCheckbox';
+    | 'multiCheckbox'
+    | 'paymentProviders'
+    | 'cashDeskSystem';
 
 export type ButtonType = {
   type: 'button' | 'submit' | 'reset';
@@ -49,7 +51,16 @@ export type ValidationRules = {
   pattern?: { value: RegExp; message: string };
 };
 
-export type OptionType = { label: string; value: any };
+export type OptionType = { label: string; value: any; tooltip?: string };
+
+export type ShowWhenConditionLeaf
+  = | { field: string; value: string; exists?: never; or?: never }
+    | { field: string; exists: true; value?: never; or?: never };
+
+/** OR-condition: visible when at least one of the sub-conditions is true */
+export type ShowWhenConditionOr = { or: ShowWhenConditionLeaf[]; field?: never; value?: never; exists?: never };
+
+export type ShowWhenCondition = ShowWhenConditionLeaf | ShowWhenConditionOr;
 
 export type Field = {
   label: string;
@@ -62,11 +73,27 @@ export type Field = {
   extraOptions?: OptionType[];
   description?: string | ReactNode;
   validation?: ValidationRules;
+  showWhen?: ShowWhenCondition | ShowWhenCondition[];
+  translations?: Record<string, string>;
+  /** For 'iban' type: the form field name to watch to activate the list */
+  triggerField?: string;
+  /** For 'iban' type: the value of triggerField that activates the list */
+  triggerValue?: string;
+  /** For 'iban' type: label for the add button */
+  addLabel?: string;
+  /** For 'iban' type: show advisor name + contact fields inside each card */
+  withAdvisor?: boolean;
+  /** For 'iban' type: label for the advisor name input */
+  advisorNameLabel?: string;
+  /** For 'iban' type: label for the advisor contact input */
+  advisorContactLabel?: string;
 };
 
 export type Step = {
   id: number;
   title: string;
+  sidebarTitle?: string;
+  displayTitle?: ReactNode;
   description: string;
   fields: Field[];
 };
@@ -82,6 +109,7 @@ export type QuestionnaireProps = {
   client: number;
   company: string;
   doubleEntry: boolean;
+  companyType?: string;
 };
 
 export type StepFormProps = {
@@ -92,6 +120,7 @@ export type StepFormProps = {
   onPrevious: () => void;
   setValue: any;
   register: any;
+  validationAttempted?: boolean;
 };
 
 export type FieldRendererProps = {

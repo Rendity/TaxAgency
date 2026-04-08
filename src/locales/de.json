@@ -84,12 +84,14 @@
     "step0": {
       "title": "Willkommen bei der ABG",
       "description": "Dies ist der Fragebogen zum digitalen Belegaustausch",
-      "body": "Im folgenden führen wir Sie durch den Fragebogen und erklären die angebotenen Leistungen, damit die für Sie passende Ablage- und Ordnerstruktur angelegt werden kann. Bitte beantworten Sie alle Fragen, auch wenn Unklarheiten bestehen. Sämtliche Angaben können selbstverständlich nachträglich abgeändert und angepasst werden.",
-      "more_info_heading": "Weitere Informationen zum digitalen Belegaustausch:"
+      "body": "Im folgenden führen wir Sie durch den Fragebogen, damit für Sie die passende Ablage- und Ordnerstruktur angelegt werden kann.",
+      "more_info_heading": "Weitere Informationen zum digitalen Belegaustausch:",
+      "note": "Bitte beantworten Sie alle Fragen, auch wenn Unklarheiten bestehen. Sämtliche Angaben können selbstverständlich nachträglich abgeändert und angepasst werden."
     },
     "step1": {
       "title": "User Accounts",
-      "description": "Erfassung der Anmeldedaten für Ihre(n) NextCloud Account(s): ",
+      "description": "Bitte erfassen Sie alle Benutzer die Zugriff auf die Nextcloud haben sollen: ",
+      "tooltip": "Alle Benutzer die hier erfasst werden erhalten Zugriff auf alle Dateien und Ordner.",
       "field": {
         "firstname": {
           "label": "Vorname"
@@ -109,78 +111,133 @@
       "title": "Ausgangsrechnungen",
       "title2": "Rechnungen",
       "description": "Rechnungen, die vom Unternehmen an Kunden ausgestellt werden.",
-      "description2": "Rechnungen die per Überweisung auf das Bankkonto eingehen und ausgehen.",
+      "description2": "Rechnungen, die das Unternehmen als Zahlungseingang auf das Firmenkonto erhält und jene die vom Firmenkonto bezahlt werden.",
       "field": {
         "description": "Select Yes or No"
+      },
+      "onlineShop": {
+        "question": "Haben Sie einen Online Shop?",
+        "label": "Online Shop",
+        "namePlaceholder": "Name des Online Shops"
       }
     },
     "step3": {
       "title": "Rechnungen",
+      "description": "Rechnungen, die das Unternehmen erhält und vom Firmenkonto bezahlt werden.",
       "fields": {
         "incomingInvoices": {
           "label": "Eingangsrechnungen",
           "description": "Rechnungen die das Unternehmen üblicherweise per Mail, oder per Post erhält und die typischerweise per Überweisung vom Firmenkonto bezahlt werden."
         },
         "recurringBills": {
-          "label": "Dauerrechnungen",
-          "description": "Jene Rechnungen, die das Unternehmen vom Lieferanten erhält und über einen längeren Zeitraum gültig sind. zB Miete/Reinigungspauschale die für das gesamte Jahr vorgeschrieben, jedoch mtl. bezahlt wird."
+          "label": "Wiederkehrende Rechnungen (Dauerrechnungen)",
+          "description": "Bezieht das Unternehmen regelmäßig wiederkehrende Leistungen von einem Lieferanten und stellt dieser nur eine Rechnung aus, die jedoch für einen längeren Zeitraum gültig ist und alle wiederkehrenden Leistungen abdeckt, handelt es sich um eine Dauerrechnung. zB Miete die für das gesamte Jahr vorgeschrieben, jedoch mtl. bezahlt wird."
         }
       }
     },
     "step4": {
       "title": "Bank",
-      "description": "Jene Kontoauszüge die digital von der Bank heruntergeladen werden können. Mögliche Formate: PDF oder Camt.053 Datei<br/><br/>Hinweis: Es müssen keine Bank-Dateien in die NextCloud hochgeladen werden, wenn die ABG die Camt.053 Dateien direkt vom Kreditinstitut bezieht. Hierfür ist eine Berechtigung des Unternehmens notwendig."
+      "description": "Die meisten Banken stellen camt.053 Dateien zur Verfügung. Mittels dieser Dateien können die Überweisungsdaten von Ihrem Bankkonto in unser Buchhaltungssystem eingespielt werden und Sie müssen sich nicht mehr darum kümmern, Kontoauszüge bereitzustellen. Um diese Funktion bestmöglich zu verwenden benötigen wir eine Einsichtsberechtigung für Ihr Bankkonto, um uns diese Dateien automatisch downloaden zu können.",
+      "bank_access_label": "Möchten Sie die camt.053 Dateien beziehen?",
+      "camt_iban_heading": "IBAN für Einsichtsberechtigung",
+      "camt_iban_tooltip": "Bitte geben Sie alle IBANs an, für die wir eine Einsichtsberechtigung benötigen",
+      "bank_advisor_name": "Name des Bankbetreuers",
+      "bank_advisor_contact": "Telefon / E-Mail des Bankbetreuers",
+      "iban_heading": "IBAN",
+      "iban_tooltip": "Für jeden IBAN sind die Kontoauszüge je IBAN abzulegen",
+      "hint": "Sie erhalten Informationen zum Erhalt der Camt.053 Datei von Ihrem Bankbetreuer.<br/><br/>Hinweis: Es müssen keine Bank-Dateien in die NextCloud hochgeladen werden, wenn die ABG die Camt.053 Dateien direkt vom Kredit-institut bezieht. Hierfür ist eine Berechtigung des Unternehmens notwendig.",
+      "payment_providers_question": "Werden alternative Zahlungsdienstleister wie z.B. PayPal verwendet?",
+      "payment_providers_list": "Verwendete Zahlungsdienstleister",
+      "add_button": "+ Hinzufügen",
+      "confirm_button": "Bestätigen",
+      "paypal": "PayPal"
     },
     "step5": {
       "title": "Ablage",
-      "description": "In die Ablage kommen jene Dokumente, die nicht zu den anderen genannten Ordnern passen (zB Versicherungspolizzen, Kaufverträge, etc).",
+      "tooltip": "Sollten nachträglich Kategorien hinzukommen, können diese angelegt werden.",
+      "description": "In die Ablage kommen jene Dokumente, die nicht zu den anderen genannten Ordnern passen (zB Versicherungsverträge, Kaufverträge, etc).",
       "fields": {
         "dynamicCheckboxDropdown": {
           "label": "Weitere Kategorien",
           "options": {
             "purchaseContract": "Kaufverträge",
-            "loanAgreement": "Darlehensverträge",
-            "leasingContract": "Leasingverträge",
-            "insurancePolicy": "Versicherungspolizzen"
+            "loanAgreement": "Darlehensverträge / Kreditverträge",
+            "incorporationDocuments": "Gründungsdokumente"
           },
           "extraOptions": {
-            "saleAgreement": "Kaufvertrag",
+            "leasingContract": "Leasingverträge",
+            "leasingContractTooltip": "Alle dazugehörigen Vorschreibungen bitte in den Ordner 'Dauerrechnungen' hochladen. Hier ausschließlich die Verträge.",
+            "insuranceContract": "Versicherungsverträge",
+            "insuranceContractTooltip": "Alle dazugehörigen Vorschreibungen bitte in den Ordner 'Dauerrechnungen' hochladen. Hier ausschließlich die Verträge.",
+            "saleAgreement": "Mietverträge",
             "indemnityAgreement": "Entschädigungsvereinbarungen",
-            "mortgageAgreement": "Hypothekenverträge"
+            "mortgageAgreement": "Hypothekenverträge",
+            "subsidiaryFoundation": "Gründungsdokumente von Tochterunternehmen"
           }
         }
       }
     },
     "step6": {
       "title": "Lohnverrechnung",
-      "description": "Wenn Mitarbeiter im Unternehmen vorhanden sind und eine Lohnverrechnung geführt wird, können jene Daten für An & Abmeldungen bzw. sonstige Änderungen die Ihre Mitarbeiter betreffen an die Lohnverrechnung via NextCloud übermittelt werden.<br/><br/>Möchte das Unternehmen für die Übermittlung der Daten für An- & Abmeldung bzw Änderungen Ihrer Mitarbeiter die NextCloud nutzen?"
+      "description": "Wenn Sie Mitarbeiter haben und deren Gehälter/Löhne über die Firma abgerechnet werden, können Sie alle Dokumente zu Anstellungen, Kündigungen, laufende Informationen und andere Änderungen für Ihre Mitarbeiter im Ordner 'Lohnverrechnung' hochladen. Wir stellen Ihnen die monatliche Lohnverrechnung über die Nextcloud zur Verfügung.",
+      "hasEmployees": "Beschäftigen Sie Dienstnehmer?",
+      "hasManagingDirector": "Gibt es einen Gesellschafter-Geschäftsführer der ein Gehalt bezieht?",
+      "payrollAccounting": "Wird die Lohnverrechnung von uns durchgeführt?",
+      "payrollInfo": "Die monatliche Lohnverrechnung wird über die Nextcloud zur Verfügung gestellt. Bitte laden Sie alle relevanten Dokumente in den Ordner 'Lohnverrechnung' hoch."
     },
     "step7": {
       "title": "HV-Abrechnungen",
-      "description": "Werden vom Unternehmen vermietete Wohnungen durch eine Hausverwaltung ganzheitlich betreut, sind jene Unterlagen von der Hausverwaltung in diesen Ordner abzulegen (zB monatliche Hauseigentümer-Abrechnungen, Betriebskosten-Abrechnungen und sonstige von der Hausverwaltung übermittelte Unterlagen)."
+      "description": "Werden vom Unternehmen vermietete Wohnungen durch eine Hausverwaltung ganzheitlich betreut, sind alle Unterlagen von der Hausverwaltung in diesen Ordner abzulegen (zB monatliche Hauseigentümer-Abrechnungen, Betriebskosten-Abrechnungen und sonstige von der Hausverwaltung übermittelte Unterlagen)."
     },
     "step8": {
       "title": "Barauslagen",
-      "description": "Rechnungen, die der Unternehmer (und/oder ein Mitarbeiter) im Geschäft/Lokal privat bezahlt oder sonstige Barauslagen, die das Unternehmen betreffen und vom Unternehmen zurückerstattet werden."
+      "description": "Rechnungen, die der Unternehmer (und/oder ein Mitarbeiter) im Geschäft/Lokal privat bezahlt oder sonstige Barauslagen, die das Unternehmen betreffen und vom Unternehmen zurückerstattet werden.",
+      "tooltip": "Belege können auch via NextCloud App fotografiert, eingescannt und direkt in den Ordner abgespeichert werden."
     },
     "step9": {
       "title": "Kreditkartenabrechnung",
-      "description": "Rechnungen, die per Kreditkarte bezahlt werden, bzw. Online-Bestellungen, die über die Kreditkarte abgewickelt wurden. Kreditkartenabrechnung & zugehörige Rechnungen sind immer in den jeweiligen Unterordnern (nach Abrechnungszeitraum) abzuspeichern."
+      "description": "Rechnungen, die per Kreditkarte bezahlt werden, bzw. Online-Bestellungen, die über die Kreditkarte abgewickelt wurden. Kreditkartenabrechnung als PDF und zugehörige Rechnungen sind immer in den jeweiligen Unterordnern (nach Abrechnungszeitraum) abzuspeichern."
     },
     "step10": {
       "description": "Monatlicher Auszug des PayPal-Kontos.<br/><br/>Hinweis: Falls das PayPal-Konto mit einem Bankkonto verknüpft ist, sollten ER im Ordner „Eingangsrechnungen“ abgespeichert werden. Falls das PayPal-Konto mit einer Kreditkarte verknüpft ist, sollten ER im richtigen Kreditkartenunterordner abgespeichert werden."
     },
     "step11": {
       "title": "Kassa",
-      "description": "Wenn eine Kassa (Handkasse/Registrierkasse) vorhanden ist muss bitte ein monatliches Kassabuch + zugehörige Belege, die im Kassabuch angeführt sind, hochgeladen werden."
+      "description": "",
+      "downloadHint": "",
+      "hasCashBalance": "Hat das Unternehmen einen Bargeldbestand und werden damit kleinere Rechnungen bezahlt?",
+      "keepsCashBook": "Wird ein Kassabuch geführt?",
+      "cashBookUploadInfo": "Das Kassabuch inkl. der Belege ist monatlich hochzuladen.",
+      "cashBookTemplateInfo": "Sollte das Kassabuch nicht über die Registrierkassa geführt werden, haben Sie hier eine",
+      "cashBookTemplateInfoLink": "Vorlage zum Download",
+      "usesRegisterCash": {
+        "question": "Wird eine Registrierkasse verwendet?",
+        "label": "Registrierkasse",
+        "tooltip": "Eine Registrierkasse ist ein elektronisches System zur Erfassung, Dokumentation und Abrechnung von Bar- und Kartenzahlungen. Sie ist in Österreich ab einem Jahresumsatz von €15.000 (davon mind. €7.500 Barumsatz) gesetzlich vorgeschrieben."
+      },
+      "cashDeskSystem": {
+        "label": "Registrierkassensystem",
+        "grantAccess": "Möchten Sie uns Zugriff zu dem Registrierkassensystem geben?",
+        "grantAccessTooltip": "Manche Registrierkassenanbieter bieten die Möglichkeit an, einen Buchhaltungsexport zur Verfügung zu stellen. Hierfür würden wir einen Zugriff auf die Registrierkasse benötigen.",
+        "username": "Benutzername",
+        "password": "Passwort"
+      },
+      "usesHandCash": {
+        "question": "Wird eine Handkassa verwendet?",
+        "tooltip": "Eine Handkassa ist ein physischer Bargeldbestand (z.B. Geldkassette oder Schublade), der für kleinere Barausgaben im Betrieb geführt wird. Im Gegensatz zur Registrierkasse ist sie nicht elektronisch und wird manuell in einem Kassabuch dokumentiert."
+      }
     },
     "step12": {
       "title": "Inventur",
-      "description": "Schriftliche Aufstellung aller Vorräte (zB Waren) nach Art, Menge und Wert die auf Lager liegen. (mind. 1x im Jahr erforderlich, zum Ende eines jeden Jahres)."
+      "description": "Schriftliche Aufstellung aller Vorräte (zB Waren) nach Art, Menge und Wert die auf Lager liegen. (muss 1x im Jahr erstellt werden zum Ende eines jeden Jahres)."
+    },
+    "step13": {
+      "title": "Registrierkasse",
+      "description": ""
     },
     "cashrecipient": {
       "title": "Barbelege",
-      "description": "Rechnungen die der Unternehmer für sein Unternehmen privat bezahlt."
+      "description": "Rechnungen für Ausgaben, die Sie und/oder Ihre Mitarbeiter im Geschäft oder Lokal privat tätigen – also zum Beispiel mit Ihrem Bank-konto oder bar bezahlen. Diese Rechnungen betreffen das Unternehmen und werden an-schließend vom Unternehmen zurückerstattet."
     }
   },
   "General": {

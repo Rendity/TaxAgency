@@ -15,6 +15,9 @@ export const HashSchema = pgTable('short_link', {
 export const SetupFormSchema = z.object({
   clientId: z.number({ required_error: 'Client ID ist erforderlich' }).positive(),
   companyName: z.string().trim().min(1, 'Firmenname ist erforderlich'),
+  companyType: z.enum(['Kapitalgesellschaft', 'Einzelunternehmen'], {
+    required_error: 'Gesellschaftsform ist erforderlich',
+  }),
   doubleEntry: z.enum(['true', 'false']),
 });
 

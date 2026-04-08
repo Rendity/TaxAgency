@@ -89,12 +89,14 @@
     "step0": {
       "title": "Welcome at ABG",
       "description": "This is the questionnaire for the digital document exchange",
-      "body": "In the following we will guide you through the questionnaire and explain the offered services so that the appropriate storage and folder structure can be created. Please answer all questions, even if there are uncertainties. All information can of course be changed and adjusted at a later date.",
-      "more_info_heading": "More information about digital document exchange:"
+      "body": "Below, we will guide you through the questionnaire so that we can create the appropriate filing and folder structure for you.",
+      "more_info_heading": "More information about digital document exchange:",
+      "note": "Please answer all questions, even if anything is unclear. All information can of course be changed and adjusted later."
     },
     "step1": {
       "title": "Account",
-      "description": "Provide your personal details and select your operating system.",
+      "description": "Please enter all users who should have access to Nextcloud: ",
+      "tooltip": "All users entered here will have access to all files and folders.",
       "field": {
         "firstname": {
           "label": "First Name"
@@ -114,10 +116,16 @@
       "title": "Outgoing Invoices",
       "title2": "Invoices",
       "description": "Invoices issued by the company to customers.",
-      "description2": "Invoices that are paid into and out of the bank account by bank transfer."
+      "description2": "Invoices that the company receives as payment into the company account and those that are paid from the company account.",
+      "onlineShop": {
+        "question": "Do you have an online shop?",
+        "label": "Online Shop",
+        "namePlaceholder": "Name of the online shop (e.g. WooCommerce)"
+      }
     },
     "step3": {
       "title": "Liabilities",
+      "description": "Invoices that the company receives and are paid from the company account.",
       "fields": {
         "incomingInvoices": {
           "label": "Incoming invoices",
@@ -131,10 +139,24 @@
     },
     "step4": {
       "title": "Bank",
-      "description": "Those bank statements that can be downloaded digitally from the bank. Possible formats: PDF or Camt.053 file.<br/><br/><br/>Note: Bank files do not need to be uploaded to NextCloud if ABG obtains the Camt.053 files directly from the bank. Company authorization is required for this."
+      "description": "Most banks provide camt.053 files. Using these files, the transfer data from your bank account can be imported into our accounting system and you no longer have to worry about providing bank statements. To use this function to the best possible extent, we need access authorization for your bank account to automatically download these files for you.",
+      "bank_access_label": "Would you like to receive camt.053 files?",
+      "camt_iban_heading": "IBANs for access authorization",
+      "camt_iban_tooltip": "Please provide all IBANs for which we need access authorization",
+      "bank_advisor_name": "Bank advisor name",
+      "bank_advisor_contact": "Bank advisor phone / email",
+      "iban_heading": "IBAN",
+      "iban_tooltip": "Bank statements must be filed for each IBAN separately",
+      "hint": "You will receive information on how to obtain the Camt.053 file from your bank advisor.<br/><br/>Note: Bank files do not need to be uploaded to NextCloud if ABG obtains the Camt.053 files directly from the bank. Company authorization is required for this.",
+      "payment_providers_question": "Are alternative payment service providers such as PayPal used?",
+      "payment_providers_list": "Payment service providers used",
+      "add_button": "+ Add",
+      "confirm_button": "Confirm",
+      "paypal": "PayPal"
     },
     "step5": {
       "title": "Filing",
+      "tooltip": "If additional categories are added later, they can be created.",
       "description": "The filing system contains those documents that do not fit into the other folders mentioned (e.g. insurance policies, purchase contracts, etc.).",
       "fields": {
         "dynamicCheckboxDropdown": {
@@ -142,20 +164,28 @@
           "options": {
             "purchaseContract": "Purchase Contract",
             "loanAgreement": "Loan Agreement",
-            "leasingContract": "Leasing Contract",
-            "insurancePolicy": "Insurance Policy"
+            "incorporationDocuments": "Incorporation Documents"
           },
           "extraOptions": {
-            "saleAgreement": "Sale Agreement",
+            "leasingContract": "Leasing Contracts",
+            "leasingContractTooltip": "Please upload all related charges to the 'Recurring Bills' folder. Only the contracts belong here.",
+            "insuranceContract": "Insurance Contracts",
+            "insuranceContractTooltip": "Please upload all related charges to the 'Recurring Bills' folder. Only the contracts belong here.",
+            "saleAgreement": "Lease Agreements",
             "indemnityAgreement": "Indemnity Agreement",
-            "mortgageAgreement": "Mortgage Agreement"
+            "mortgageAgreement": "Mortgage Agreement",
+            "subsidiaryFoundation": "Foundation Documents of Subsidiaries"
           }
         }
       }
     },
     "step6": {
       "title": "Payroll Accounting",
-      "description": "If the company has employees and a payroll system is in place, the data for registrations and deregistrations or other changes that affect your employees can be transmitted to the payroll system via NextCloud.<br/><br/>Does the company want to use NextCloud to transmit the data for registrations and deregistrations or changes to your employees?"
+      "description": "If you have employees and their salaries/wages are paid through the company, you can upload all documents relating to employment, termination, current information, and other changes for your employees to the 'Payroll' folder. We provide you with the monthly payroll via Nextcloud.",
+      "hasEmployees": "Do you employ staff?",
+      "hasManagingDirector": "Is there a managing shareholder who receives a salary?",
+      "payrollAccounting": "Is payroll accounting carried out by us?",
+      "payrollInfo": "The monthly payroll is made available via Nextcloud. Please upload all relevant documents to the 'Payroll' folder."
     },
     "step7": {
       "title": "General Billing",
@@ -163,7 +193,8 @@
     },
     "step8": {
       "title": "Cash expenses",
-      "description": "Bills paid privately by the business owner (and/or an employee) in the store/restaurant, or other cash expenses related to the business that are reimbursed by the business."
+      "description": "Bills paid privately by the business owner (and/or an employee) in the store/restaurant, or other cash expenses related to the business that are reimbursed by the business.",
+      "tooltip": "Receipts can also be photographed, scanned and saved directly to the folder via the NextCloud app."
     },
     "step9": {
       "title": "Credit Card",
@@ -174,11 +205,37 @@
     },
     "step11": {
       "title": "Cash Register",
-      "description": "If a cash register (hand cash register/cash register) is available, please upload a monthly cash book + associated receipts listed in the cash book."
+      "description": "",
+      "downloadHint": "",
+      "hasCashBalance": "Does the company have a cash balance and are smaller invoices paid with it?",
+      "keepsCashBook": "Is a cash book kept?",
+      "cashBookUploadInfo": "The cash book including receipts must be uploaded monthly.",
+      "cashBookTemplateInfo": "If the cash book is not kept via the cash register, you can find a",
+      "cashBookTemplateInfoLink": "template here for download",
+      "usesRegisterCash": {
+        "question": "Is a cash register used?",
+        "label": "Cash register",
+        "tooltip": "A cash register is an electronic system for recording, documenting, and processing cash and card payments. In Austria, it is required by law for businesses with annual turnover exceeding €15,000 (of which at least €7,500 must be cash turnover)."
+      },
+      "cashDeskSystem": {
+        "label": "Cash register system",
+        "grantAccess": "Would you like to grant us access to the cash register system?",
+        "grantAccessTooltip": "Some cash register providers offer the option to provide an accounting export. For this, we would need access to the cash register.",
+        "username": "Username",
+        "password": "Password"
+      },
+      "usesHandCash": {
+        "question": "Is a hand cash register used?",
+        "tooltip": "A hand cash register is a physical cash reserve (e.g. a cash box or drawer) used for smaller cash expenses in the business. Unlike an electronic cash register, it is managed manually and documented in a cash book."
+      }
     },
     "step12": {
       "title": "Inventory",
       "description": "A written list of all inventories (e.g., goods) in stock, broken down by type, quantity, and value. (Required at least once a year, at the end of each year)."
+    },
+    "step13": {
+      "title": "Cash Register System",
+      "description": ""
     },
     "cashrecipient": {
       "title": "Cash receipts",
