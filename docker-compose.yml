@@ -10,10 +10,10 @@ services:
       db:
         condition: service_healthy
     environment:
-      - SKIP_DB=false   # runtime should connect to DB
+      - SKIP_DB=false # runtime should connect to DB
     networks:
       - web
-    
+
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.start.rule=Host(`start.abgwt.at`)"

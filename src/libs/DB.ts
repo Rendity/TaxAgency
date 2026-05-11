@@ -7,7 +7,7 @@ import { Env } from './Env';
 
 const schema = Object.assign({}, ...schemaModules);
 
-let dbInstance: ReturnType<typeof drizzlePg> | null = null;
+let dbInstance: ReturnType<typeof drizzlePg<typeof schema, Client>> | null = null;
 
 export async function getDb() {
   if (process.env.SKIP_DB === 'true') {

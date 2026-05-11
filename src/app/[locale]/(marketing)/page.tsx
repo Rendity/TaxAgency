@@ -44,7 +44,6 @@ export default async function Index({ params, searchParams }: IIndexProps) {
       client={Number(companyData.clientId)}
       company={String(companyData.companyName)}
       doubleEntry={companyData.doubleEntry === 'true'}
-      companyType={companyData.companyType}
       steps={steps}
     />
   );

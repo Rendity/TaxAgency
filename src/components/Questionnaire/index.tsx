@@ -13,9 +13,7 @@ import StepForm from './StepForm';
 import ThankYou from './ThankYou';
 import { toast } from 'react-toastify';
 
-type FormData = z.infer<ReturnType<typeof getFormSchema>>;
-
-export default function Questionnaire({ steps, client, company, doubleEntry, companyType }: QuestionnaireProps) {
+export default function Questionnaire({ steps, client, company, doubleEntry }: QuestionnaireProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
@@ -23,9 +21,9 @@ export default function Questionnaire({ steps, client, company, doubleEntry, com
   const [validationAttempted, setValidationAttempted] = useState(false);
 
   const schema = useMemo<ReturnType<typeof getFormSchema>>(
-    () => getFormSchema(`${client}_${company}`, companyType, doubleEntry),
+    () => getFormSchema(`${client}_${company}`),
 
-    [client, company, companyType, doubleEntry],
+    [client, company],
   );
 
   const methods = useForm({
@@ -136,16 +134,16 @@ export default function Questionnaire({ steps, client, company, doubleEntry, com
 
   const nextStep = async () => {
     // Get field names for current step
-    const fieldNames = steps[currentStep]?.fields.map((f: Field) => f.name) as (keyof FormData)[];
+    const fieldNames = steps[currentStep]?.fields.map((f: Field) => f.name) as string[];
 
     // First validate current step's fields
-    await trigger(fieldNames);
+    await trigger(fieldNames as any);
 
     // Then run full validation to trigger schema-level refinements
     await methods.trigger();
 
     // Check if there are any validation errors for the current step's fields
-    const currentStepErrors = fieldNames.some(fieldName => !!errors[fieldName as keyof typeof errors]);
+    const currentStepErrors = fieldNames?.some(fieldName => (errors as any)[fieldName]);
 
     if (!currentStepErrors) {
       // No errors - proceed to next step
@@ -212,21 +210,13 @@ export default function Questionnaire({ steps, client, company, doubleEntry, com
                   onSubmit={handleSubmit(
                     onSubmit,
                     (formErrors) => {
-                      const extractMessages = (errors: Record<string, any>): string[] => {
-                        const msgs: string[] = [];
-                        Object.values(errors).forEach((err) => {
-                          if (err?.message && typeof err.message === 'string') {
-                            msgs.push(err.message);
-                          } else if (typeof err === 'object' && err !== null) {
-                            msgs.push(...extractMessages(err));
-                          }
-                        });
-                        return msgs;
-                      };
-                      const messages = extractMessages(formErrors);
-                      toast.error(messages.length > 0
-                        ? messages.join('\n')
-                        : 'Bitte überprüfen Sie Ihre Eingaben.');
+                      console.error('❌ Zod validation failed:', formErrors);
+                      // show a toast for each error
+                      Object.values(formErrors).forEach((err) => {
+                        if (err?.message) {
+                          toast.error(err.message);
+                        }
+                      });
                     },
                   )}
                 />
