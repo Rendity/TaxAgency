@@ -19,6 +19,7 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationAttempted, setValidationAttempted] = useState(false);
+  const [reviewSubmitAttempted, setReviewSubmitAttempted] = useState(false);
 
   const schema = useMemo<ReturnType<typeof getFormSchema>>(
     () => getFormSchema(`${client}_${company}`),
@@ -207,11 +208,13 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
                 <Review
                   steps={steps}
                   isSubmitting={isSubmitting}
+                  errors={errors}
+                  reviewSubmitAttempted={reviewSubmitAttempted}
                   onSubmit={handleSubmit(
                     onSubmit,
                     (formErrors) => {
                       console.error('❌ Zod validation failed:', formErrors);
-                      // show a toast for each error
+                      setReviewSubmitAttempted(true);
                       Object.values(formErrors).forEach((err) => {
                         if (err?.message) {
                           toast.error(err.message);

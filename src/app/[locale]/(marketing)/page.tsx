@@ -6,12 +6,12 @@ import { getStepsData } from '@/components/Questionnaire/stepsData';
 import { getCompanyData } from '@/lib/utils';
 
 type IIndexProps = {
-  params: { locale: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ locale: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateMetadata({ params }: IIndexProps): Promise<Metadata> {
-  const { locale } = params ?? { locale: 'de' };
+  const { locale } = (await params) ?? { locale: 'de' };
   const t = await getTranslations({ locale, namespace: 'Index' });
 
   return {
@@ -21,9 +21,10 @@ export async function generateMetadata({ params }: IIndexProps): Promise<Metadat
 }
 
 export default async function Index({ params, searchParams }: IIndexProps) {
-  const { locale } = params ?? { locale: 'de' };
+  const { locale } = (await params) ?? { locale: 'de' };
+  const resolvedSearchParams = await searchParams;
   const companyHash
-    = typeof searchParams?.company === 'string' ? searchParams.company : undefined;
+    = typeof resolvedSearchParams?.company === 'string' ? resolvedSearchParams.company : undefined;
 
   if (!companyHash) {
     redirect(`/${locale}/setup`);

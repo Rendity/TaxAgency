@@ -59,3 +59,4 @@ storybook-static
 /playwright-report/
 /playwright/.cache/
 .env
+scripts/setup-glm.sh

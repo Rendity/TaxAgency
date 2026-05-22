@@ -428,9 +428,9 @@ export async function processNextCloud(data: QuestionnaireDataType) {
     }
 
     // STEP # 10 - PAYPAL
-    if (data.paypal === 'Yes') {
-      addPathToTree(folderTree, ['9_PayPal']);
-    }
+    // if (data.paypal === 'Yes') {
+    //   addPathToTree(folderTree, ['9_PayPal']);
+    // }
     // STEP # 11 - CASH Register
     if (data.cashDesk === 'Yes') {
       addPathToTree(folderTree, ['10_Kassa']);
@@ -477,9 +477,9 @@ export async function processNextCloud(data: QuestionnaireDataType) {
     }
 
     // STEP # 8 - PAYPAL
-    if (data.paypal === 'Yes') {
-      addPathToTree(folderTree, ['9_PayPal']);
-    }
+    // if (data.paypal === 'Yes') {
+    //   addPathToTree(folderTree, ['9_PayPal']);
+    // }
     // STEP # 9 - CASH
     if (data.cashrecipiets === 'Yes') {
       addPathToTree(folderTree, ['12_Barbelege', 'VERBUCHT']);

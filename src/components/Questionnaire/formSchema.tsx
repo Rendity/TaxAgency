@@ -124,7 +124,7 @@ export const formSchema = (company: string) => z
 
     // Step 2
     outgoingInvoices: z.enum(['Yes', 'No']).optional(),
-    invoices: z.enum(['Yes', 'No']),
+    // invoices: z.enum(['Yes', 'No']),
 
     // Step 3
     incomingInvoices: z.enum(['Yes', 'No']),
@@ -188,7 +188,7 @@ export const formSchema = (company: string) => z
     ccFileObtain: z.enum(['Yes', 'No', 'camt']),
 
     // Step 10–12
-    paypal: z.enum(['Yes', 'No']),
+    // paypal: z.enum(['Yes', 'No']),
     cashrecipiets: z.enum(['Yes', 'No']).optional(),
     hasCashBalance: z.enum(['Yes', 'No']).optional(),
     keepsCashBook: z.enum(['Yes', 'No']).optional(),
@@ -243,13 +243,13 @@ export const formSchema = (company: string) => z
   })
   .superRefine((data, ctx) => {
     // Custom validation logic for required enum fields
-    if (!data.invoices) {
-      ctx.addIssue({
-        path: ['invoices'],
-        code: z.ZodIssueCode.custom,
-        message: 'Bitte eine Auswahl treffen',
-      });
-    }
+    // if (!data.invoices) {
+    //   ctx.addIssue({
+    //     path: ['invoices'],
+    //     code: z.ZodIssueCode.custom,
+    //     message: 'Bitte eine Auswahl treffen',
+    //   });
+    // }
 
     if (!data.incomingInvoices) {
       ctx.addIssue({
@@ -291,13 +291,13 @@ export const formSchema = (company: string) => z
       });
     }
 
-    if (!data.paypal) {
-      ctx.addIssue({
-        path: ['paypal'],
-        code: z.ZodIssueCode.custom,
-        message: 'Bitte eine Auswahl treffen',
-      });
-    }
+    // if (!data.paypal) {
+    //   ctx.addIssue({
+    //     path: ['paypal'],
+    //     code: z.ZodIssueCode.custom,
+    //     message: 'Bitte eine Auswahl treffen',
+    //   });
+    // }
 
     if (!data.inventory) {
       ctx.addIssue({
