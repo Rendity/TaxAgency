@@ -13,7 +13,7 @@ import StepForm from './StepForm';
 import ThankYou from './ThankYou';
 import { toast } from 'react-toastify';
 
-export default function Questionnaire({ steps, client, company, doubleEntry }: QuestionnaireProps) {
+export default function Questionnaire({ steps, client, company, doubleEntry, companyType }: QuestionnaireProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
@@ -22,67 +22,13 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
   const [reviewSubmitAttempted, setReviewSubmitAttempted] = useState(false);
 
   const schema = useMemo<ReturnType<typeof getFormSchema>>(
-    () => getFormSchema(`${client}_${company}`),
+    () => getFormSchema(`${client}_${company}`, doubleEntry, companyType),
 
-    [client, company],
+    [client, company, doubleEntry, companyType],
   );
 
   const methods = useForm({
     resolver: zodResolver(schema),
-    // defaultValues: {
-    //   accounts: [
-    //     {
-    //       firstName: 'Shahbaz Ali Khan',
-    //       lastName: 'Imrani',
-    //       email: 'ishahbaz4.pk@gmail.com',
-    //       operatingSystem: 'windows',
-    //     },
-    //     // {
-    //     //   firstName: 'Habib Ali Khan',
-    //     //   lastName: 'Imrani',
-    //     //   email: 'habib4.pk@gmail.com',
-    //     //   operatingSystem: 'macos',
-    //     // },
-    //   ],
-    //   // outgoingInvoices: 'No',
-    //   incomingInvoices: 'No',
-    //   recurringBills: 'No',
-    //   bankFileObtain: 'Yes',
-    //   ibans: [
-    //     {
-    //       value: 'DE89370400440532013000',
-    //     },
-    //     {
-    //       value: 'DE89370400440532013001',
-    //     },
-    //   ],
-    //   // filingCategories: ['Kaufverträge', 'India', 'USA', 'Germany'],
-    //   payrollAccounting: 'No',
-    //   agmSettlements: 'No',
-    //   // person: [
-    //   //   {
-    //   //     firstName: 'Mahboob Ali Khan',
-    //   //     lastName: 'Imrani',
-    //   //   },
-    //   //   {
-    //   //     firstName: 'Mansoor Ali Khan',
-    //   //     lastName: 'Imrani',
-    //   //   },
-    //   // ],
-    //   ccFileObtain: 'Yes',
-    //   creditCards: [
-    //     {
-    //       value: '1234 5678 9012 3456',
-    //     },
-    //     {
-    //       value: '9876 5432 1098 7654',
-    //     },
-    //   ],
-    //   paypal: 'No',
-    //   cashrecipiets: 'No',
-    //   cashDesk: 'No',
-    //   inventory: 'No',
-    // },
   });
 
   const {
@@ -98,7 +44,8 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
     setValue('clientId', client);
     setValue('companyName', company);
     setValue('doubleEntry', doubleEntry);
-  }, [client, company, doubleEntry, setValue]);
+    setValue('companyType', companyType);
+  }, [client, company, doubleEntry, companyType, setValue]);
 
   const onSubmit: SubmitHandler<z.infer<typeof schema>> = async (data) => {
     try {
@@ -150,7 +97,8 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
       // No errors - proceed to next step
       const newStep = currentStep + 1;
       setCurrentStep(newStep);
-      setValidationAttempted(false); // Reset for next step
+      setValidationAttempted(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (!completedSteps.includes(currentStep)) {
         setCompletedSteps(prev => [...prev, currentStep]);
@@ -164,15 +112,17 @@ export default function Questionnaire({ steps, client, company, doubleEntry }: Q
   const previousStep = () => {
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleStepClick = (index: number) => {
     if (completedSteps.includes(index) || index === currentStep) {
       setCurrentStep(index);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (index === completedSteps.length) {
-      // Allow navigation to the next step if it's the immediate next step
       setCurrentStep(index);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 

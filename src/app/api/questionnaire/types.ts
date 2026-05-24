@@ -5,8 +5,8 @@ import { formSchema } from '@/components/Questionnaire/formSchema';
 // const extendedSchema = formSchema(client, company).innerType();
 // export type QuestionnaireDataType = z.infer<typeof extendedSchema>;
 
-export const createExtendedSchema = (company: string) =>
-  formSchema(company).innerType();
+export const createExtendedSchema = (company: string, doubleEntry: boolean, companyType?: string) =>
+  formSchema(company, doubleEntry, companyType).innerType();
 
 export type QuestionnaireDataType = z.infer<
   ReturnType<typeof createExtendedSchema>

@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   try {
     const payload = await req.json();
     if (payload) {
-      const data = await createExtendedSchema(`${payload.clientId}_${payload.companyName}`).parseAsync(payload) as QuestionnaireDataType;
+      const data = await createExtendedSchema(`${payload.clientId}_${payload.companyName}`, payload.doubleEntry, payload.companyType).parseAsync(payload) as QuestionnaireDataType;
       const result = await processNextCloud(data);
       return NextResponse.json(result);
     }

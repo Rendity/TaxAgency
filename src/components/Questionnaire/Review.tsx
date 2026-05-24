@@ -4,7 +4,10 @@ import type { FC } from 'react';
 import type { Step } from './types';
 import { useFormContext } from 'react-hook-form';
 
-const maskValue = (value: string) => `${value.slice(0, 2)}************${value.slice(-4)}`;
+const maskValue = (value: string) => {
+  const clean = value.replace(/\s+/g, '');
+  return `${clean.slice(0, 2)}************${clean.slice(-4)}`;
+};
 
 type Props = {
   steps: Step[];
@@ -238,20 +241,23 @@ const Review: FC<Props> = ({ steps, onSubmit, isSubmitting, errors, reviewSubmit
                       ...selected.filter((s: string) => s !== '__other__'),
                       ...(other ? [other] : []),
                     ];
-                    if (entries.length === 0) {
+                    const hasGrantAccess = grantAccess && grantAccess !== '';
+                    if (entries.length === 0 && !hasGrantAccess) {
                       return null;
                     }
                     return (
                       <div key={field.name} className="py-1 border-b border-gray-100 last:border-0 text-sm text-gray-700">
                         <span className="font-medium block mb-1">{label}</span>
-                        <ul className="list-disc list-inside text-gray-600 pl-1">
-                          {entries.map((e: string, i: number) => <li key={i}>{e}</li>)}
-                        </ul>
-                        {grantAccess && (
+                        {entries.length > 0 && (
+                          <ul className="list-disc list-inside text-gray-600 pl-1">
+                            {entries.map((e: string, i: number) => <li key={i}>{e}</li>)}
+                          </ul>
+                        )}
+                        {hasGrantAccess && (
                           <div className="mt-1 text-gray-600">
                             Zugriff:
                             {' '}
-                            <YesNo value={grantAccess} />
+                            <YesNo value={grantAccess!} />
                             {grantAccess === 'Yes' && username && (
                               <span className="ml-2">
                                 (
@@ -312,19 +318,50 @@ const Review: FC<Props> = ({ steps, onSubmit, isSubmitting, errors, reviewSubmit
                     );
                   }
 
-                  // --- iban / creditcard: array of { value } ---
+                  // --- iban / creditcard: array of { value, advisorName?, advisorContact? } ---
                   if ((field.type === 'iban' || field.type === 'creditcard') && Array.isArray(value)) {
                     if (value.length === 0) {
                       return null;
                     }
+                    const hasAdvisor = value.some(
+                      (item: any) => item.advisorName || item.advisorContact,
+                    );
                     return (
                       <div key={field.name} className="py-1 border-b border-gray-100 last:border-0 text-sm text-gray-700">
                         <span className="font-medium block mb-1">{label}</span>
-                        <ul className="list-disc list-inside text-gray-600 pl-1">
-                          {value.map((item: { value: string }, i: number) => (
-                            <li key={i}>{typeof item?.value === 'string' ? maskValue(item.value) : String(item)}</li>
-                          ))}
-                        </ul>
+                        {hasAdvisor
+                          ? (
+                              <div className="space-y-2 pl-1">
+                                {value.map((item: any, i: number) => (
+                                  <div key={i} className="border rounded-md p-2 bg-gray-50">
+                                    <span className="font-mono">{typeof item?.value === 'string' ? maskValue(item.value) : String(item)}</span>
+                                    {(item.advisorName || item.advisorContact) && (
+                                      <div className="mt-1 text-xs text-gray-500 space-y-0.5">
+                                        {item.advisorName && (
+                                          <div>
+                                            Betreuer:
+                                            {item.advisorName}
+                                          </div>
+                                        )}
+                                        {item.advisorContact && (
+                                          <div>
+                                            Kontakt:
+                                            {item.advisorContact}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )
+                          : (
+                              <ul className="list-disc list-inside text-gray-600 pl-1">
+                                {value.map((item: { value: string }, i: number) => (
+                                  <li key={i}>{typeof item?.value === 'string' ? maskValue(item.value) : String(item)}</li>
+                                ))}
+                              </ul>
+                            )}
                       </div>
                     );
                   }

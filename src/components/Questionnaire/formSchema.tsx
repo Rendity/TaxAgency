@@ -105,261 +105,275 @@ const accountSchema = (company: string) => z.object({
   }),
 });
 
-export const formSchema = (company: string) => z
-  .object({
-    // Step 1
-    clientId: z.number().min(1, 'Bitte ID des Klienten angeben'),
-    companyName: z.string().min(1, 'Bitte Firmenname angeben'),
-    doubleEntry: z.boolean().default(false),
-    accounts: z.array(accountSchema(company)).min(1, 'Mindestens eine Person erforderlich').refine((accounts) => {
-      const emails = accounts.map(acc => acc.email.toLowerCase().trim());
-      const allEmpty = emails.every(item => item === '');
-      if (allEmpty) {
-        return true;
+export const formSchema = (company: string, doubleEntry: boolean, companyType?: string) => {
+  const isEinzelunternehmen = companyType === 'Einzelunternehmen';
+
+  return z
+    .object({
+      // Step 1
+      clientId: z.number().min(1, 'Bitte ID des Klienten angeben'),
+      companyName: z.string().min(1, 'Bitte Firmenname angeben'),
+      doubleEntry: z.boolean().default(false),
+      companyType: z.string().optional(),
+      accounts: z.array(accountSchema(company)).min(1, 'Mindestens eine Person erforderlich').refine((accounts) => {
+        const emails = accounts.map(acc => acc.email.toLowerCase().trim());
+        const allEmpty = emails.every(item => item === '');
+        if (allEmpty) {
+          return true;
+        }
+        return new Set(emails).size === emails.length;
+      }, {
+        message: 'E-Mail-Adressen müssen eindeutig sein',
+      }),
+
+      // Invoices — used in Einzelunternehmen flows
+      invoices: z.enum(['Yes', 'No']).optional(),
+
+      // Invoices — used in non-Einzelunternehmen flows
+      outgoingInvoices: z.enum(['Yes', 'No']).optional(),
+      onlineShopName: z.string().optional(),
+      incomingInvoices: z.enum(['Yes', 'No']).optional(),
+      recurringBills: z.enum(['Yes', 'No']).optional(),
+
+      // Bank
+      ibans: z.array(ibanSchema).optional().refine(
+        (ibans) => {
+          if (!ibans) {
+            return true;
+          }
+          const values = ibans.map(item => item.value);
+          return new Set(values).size === values.length;
+        },
+        { message: 'IBANs müssen eindeutig sein' },
+      ),
+      bankFileObtain: z.enum(['Yes', 'No']),
+      camtIbans: z.array(z.object({
+        value: z.string().min(1, 'Bitte IBAN angeben').transform(val => val.replace(/\s/g, '')).refine(isValidIBAN, { message: 'Ungültiger IBAN' }),
+        advisorName: z.string().optional(),
+        advisorContact: z.string().optional(),
+      })).optional().refine(
+        (ibans) => {
+          if (!ibans) {
+            return true;
+          }
+          const values = ibans.map(item => item.value);
+          return new Set(values).size === values.length;
+        },
+        { message: 'IBANs müssen eindeutig sein' },
+      ),
+      hasPaymentProviders: z.enum(['Yes', 'No']).optional(),
+      paymentProviders: z.array(z.object({
+        name: z.string(),
+        checked: z.boolean(),
+      })).optional(),
+
+      // Filing categories
+      filingCategories: filingCategoriesSchema,
+
+      // Employees
+      hasEmployees: z.enum(['Yes', 'No']).optional().refine(val => val !== undefined, {
+        message: 'Bitte eine Auswahl treffen',
+      }),
+      hasManagingDirector: z.enum(['Yes', 'No']).optional(),
+      payrollAccounting: z.enum(['Yes', 'No']).optional(),
+
+      // AGM settlements
+      agmSettlements: z.enum(['Yes', 'No']),
+
+      // Persons (double entry only)
+      person: z.array(personSchema).optional(),
+
+      // Credit cards
+      creditCards: z.array(CCSchema).optional().refine(
+        (cards) => {
+          if (!cards) {
+            return true;
+          }
+          const values = cards.map(item => item.value);
+          return new Set(values).size === values.length;
+        },
+        { message: 'Kreditkartennummern müssen eindeutig sein' },
+      ),
+      ccFileObtain: z.enum(['Yes', 'No', 'camt']),
+
+      // Cash / register
+      cashrecipiets: z.enum(['Yes', 'No']).optional(),
+      hasCashBalance: z.enum(['Yes', 'No']).optional(),
+      keepsCashBook: z.enum(['Yes', 'No']).optional(),
+      cashDesk: z.enum(['Yes', 'No']).optional(),
+      usesRegisterCash: z.enum(['Yes', 'No']).optional(),
+      cashDeskSystem: z.object({
+        selected: z.array(z.string()),
+        other: z.string(),
+        grantAccess: z.enum(['Yes', 'No', '']).optional(),
+        username: z.string().optional(),
+        password: z.string().optional(),
+      }).superRefine((val, ctx) => {
+        if (val.grantAccess === 'Yes') {
+          if (!val.username || val.username.trim() === '') {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Benutzername ist erforderlich.',
+              path: ['username'],
+            });
+          }
+          if (!val.password || val.password.trim() === '') {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Passwort ist erforderlich.',
+              path: ['password'],
+            });
+          }
+        }
+      }).optional(),
+      usesHandCash: z.enum(['Yes', 'No']).optional(),
+      inventory: z.enum(['Yes', 'No']),
+    })
+    .refine((data) => {
+      if (data.hasEmployees === 'Yes' && !data.hasManagingDirector) {
+        return false;
       }
-      return new Set(emails).size === emails.length;
+      return true;
     }, {
-      message: 'E-Mail-Adressen müssen eindeutig sein',
-    }),
-
-    // Step 2
-    outgoingInvoices: z.enum(['Yes', 'No']).optional(),
-    // invoices: z.enum(['Yes', 'No']),
-
-    // Step 3
-    incomingInvoices: z.enum(['Yes', 'No']),
-    recurringBills: z.enum(['Yes', 'No']),
-
-    // Step 4
-    ibans: z.array(ibanSchema).optional().refine(
-      (ibans) => {
-        if (!ibans) {
-          return true;
-        } // Skip if optional and undefined
-        const values = ibans.map(item => item.value);
-        return new Set(values).size === values.length;
-      },
-      { message: 'IBANs müssen eindeutig sein' },
-    ),
-    bankFileObtain: z.enum(['Yes', 'No']),
-    camtIbans: z.array(z.object({
-      value: z.string().min(1, 'Bitte IBAN angeben').transform(val => val.replace(/\s/g, '')).refine(isValidIBAN, { message: 'Ungültiger IBAN' }),
-      advisorName: z.string().optional(),
-      advisorContact: z.string().optional(),
-    })).optional().refine(
-      (ibans) => {
-        if (!ibans) {
-          return true;
-        }
-        const values = ibans.map(item => item.value);
-        return new Set(values).size === values.length;
-      },
-      { message: 'IBANs müssen eindeutig sein' },
-    ),
-    hasPaymentProviders: z.enum(['Yes', 'No']).optional(),
-
-    // Step 5
-    filingCategories: filingCategoriesSchema,
-
-    // Step 6
-    hasEmployees: z.enum(['Yes', 'No']).optional().refine(val => val !== undefined, {
       message: 'Bitte eine Auswahl treffen',
-    }),
-    hasManagingDirector: z.enum(['Yes', 'No']).optional(),
-    payrollAccounting: z.enum(['Yes', 'No']).optional(),
-
-    // Step 7
-    agmSettlements: z.enum(['Yes', 'No']),
-
-    // Step 8
-    person: z.array(personSchema).optional(),
-
-    // Step 9
-    creditCards: z.array(CCSchema).optional().refine(
-      (cards) => {
-        if (!cards) {
-          return true;
-        }
-        const values = cards.map(item => item.value);
-        return new Set(values).size === values.length;
-      },
-      { message: 'Kreditkartennummern müssen eindeutig sein' },
-    ),
-    ccFileObtain: z.enum(['Yes', 'No', 'camt']),
-
-    // Step 10–12
-    // paypal: z.enum(['Yes', 'No']),
-    cashrecipiets: z.enum(['Yes', 'No']).optional(),
-    hasCashBalance: z.enum(['Yes', 'No']).optional(),
-    keepsCashBook: z.enum(['Yes', 'No']).optional(),
-    cashDesk: z.enum(['Yes', 'No']).optional(),
-    usesRegisterCash: z.enum(['Yes', 'No']).optional(),
-    cashDeskSystem: z.object({
-      selected: z.array(z.string()),
-      other: z.string(),
-      grantAccess: z.enum(['Yes', 'No', '']).optional(),
-      username: z.string().optional(),
-      password: z.string().optional(),
-    }).superRefine((val, ctx) => {
-      if (val.grantAccess === 'Yes') {
-        if (!val.username || val.username.trim() === '') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Benutzername ist erforderlich.',
-            path: ['username'],
-          });
-        }
-        if (!val.password || val.password.trim() === '') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Passwort ist erforderlich.',
-            path: ['password'],
-          });
-        }
+      path: ['hasManagingDirector'],
+    })
+    .refine((data) => {
+      if (data.hasEmployees === 'Yes' && !data.payrollAccounting) {
+        return false;
       }
-    }).optional(),
-    usesHandCash: z.enum(['Yes', 'No']).optional(),
-    inventory: z.enum(['Yes', 'No']),
-  })
-  .refine((data) => {
-    // Validate hasManagingDirector when hasEmployees = 'Yes'
-    if (data.hasEmployees === 'Yes' && !data.hasManagingDirector) {
-      return false;
-    }
-    return true;
-  }, {
-    message: 'Bitte eine Auswahl treffen',
-    path: ['hasManagingDirector'],
-  })
-  .refine((data) => {
-    // Validate payrollAccounting when hasEmployees = 'Yes'
-    if (data.hasEmployees === 'Yes' && !data.payrollAccounting) {
-      return false;
-    }
-    return true;
-  }, {
-    message: 'Bitte eine Auswahl treffen',
-    path: ['payrollAccounting'],
-  })
-  .superRefine((data, ctx) => {
-    // Custom validation logic for required enum fields
-    // if (!data.invoices) {
-    //   ctx.addIssue({
-    //     path: ['invoices'],
-    //     code: z.ZodIssueCode.custom,
-    //     message: 'Bitte eine Auswahl treffen',
-    //   });
-    // }
-
-    if (!data.incomingInvoices) {
-      ctx.addIssue({
-        path: ['incomingInvoices'],
-        code: z.ZodIssueCode.custom,
-        message: 'Bitte eine Auswahl treffen',
-      });
-    }
-
-    if (!data.recurringBills) {
-      ctx.addIssue({
-        path: ['recurringBills'],
-        code: z.ZodIssueCode.custom,
-        message: 'Bitte eine Auswahl treffen',
-      });
-    }
-
-    if (!data.bankFileObtain) {
-      ctx.addIssue({
-        path: ['bankFileObtain'],
-        code: z.ZodIssueCode.custom,
-        message: 'Bitte eine Auswahl treffen',
-      });
-    }
-
-    if (!data.agmSettlements) {
-      ctx.addIssue({
-        path: ['agmSettlements'],
-        code: z.ZodIssueCode.custom,
-        message: 'Bitte eine Auswahl treffen',
-      });
-    }
-
-    if (!data.ccFileObtain) {
-      ctx.addIssue({
-        path: ['ccFileObtain'],
-        code: z.ZodIssueCode.custom,
-        message: 'Bitte eine Auswahl treffen',
-      });
-    }
-
-    // if (!data.paypal) {
-    //   ctx.addIssue({
-    //     path: ['paypal'],
-    //     code: z.ZodIssueCode.custom,
-    //     message: 'Bitte eine Auswahl treffen',
-    //   });
-    // }
-
-    if (!data.inventory) {
-      ctx.addIssue({
-        path: ['inventory'],
-        code: z.ZodIssueCode.custom,
-        message: 'Bitte eine Auswahl treffen',
-      });
-    }
-
-    if (data.doubleEntry) {
-      // some validations in case of double entry
-      if (!data.outgoingInvoices) {
+      return true;
+    }, {
+      message: 'Bitte eine Auswahl treffen',
+      path: ['payrollAccounting'],
+    })
+    .superRefine((data, ctx) => {
+      // ── Common validations (all flows) ──
+      if (!data.bankFileObtain) {
         ctx.addIssue({
-          path: ['outgoingInvoices'],
+          path: ['bankFileObtain'],
           code: z.ZodIssueCode.custom,
           message: 'Bitte eine Auswahl treffen',
         });
       }
-      if (data.person && data.person.length > 5) {
-        ctx.addIssue({
-          path: ['person'],
-          code: z.ZodIssueCode.custom,
-          message: 'Es können maximal 5 Personen angegeben werden.',
-        });
-      }
-    } else {
-      // ✅ Make cashrecipiets required if doubleEntry is false
-      if (!data.cashrecipiets) {
-        ctx.addIssue({
-          path: ['cashrecipiets'],
-          code: z.ZodIssueCode.custom,
-          message: 'Der Name der Mitarbeiter mit Barauslagen ist anzugeben, wenn "Ja" ausgewählt wurde.',
-        });
-      }
-    }
-    if (data.bankFileObtain === 'No') {
-      if (!data.ibans || data.ibans.length === 0) {
-        ctx.addIssue({
-          path: ['ibans'],
-          code: z.ZodIssueCode.custom,
-          message: 'Mindestens ein IBAN ist anzugeben, wenn "Nein" ausgewählt wurde.',
-        });
-      }
-    }
 
-    if (data.bankFileObtain === 'Yes') {
-      if (!data.camtIbans || data.camtIbans.length === 0) {
+      if (!data.agmSettlements) {
         ctx.addIssue({
-          path: ['camtIbans'],
+          path: ['agmSettlements'],
           code: z.ZodIssueCode.custom,
-          message: 'Mindestens ein IBAN ist anzugeben.',
+          message: 'Bitte eine Auswahl treffen',
         });
       }
-    }
 
-    if (data.ccFileObtain === 'Yes') {
-      if (!data.creditCards || data.creditCards.length === 0) {
+      if (!data.ccFileObtain) {
         ctx.addIssue({
-          path: ['creditCards'],
+          path: ['ccFileObtain'],
           code: z.ZodIssueCode.custom,
-          message: 'Mindestens eine Kreditkarte ist anzugeben, wenn "Ja" ausgewählt wurde.',
+          message: 'Bitte eine Auswahl treffen',
         });
       }
-    }
-  });
+
+      if (!data.inventory) {
+        ctx.addIssue({
+          path: ['inventory'],
+          code: z.ZodIssueCode.custom,
+          message: 'Bitte eine Auswahl treffen',
+        });
+      }
+
+      // ── Flow-specific validations ──
+      if (isEinzelunternehmen) {
+        // Einzelunternehmen: invoices field, no outgoingInvoices/incomingInvoices
+        if (!data.invoices) {
+          ctx.addIssue({
+            path: ['invoices'],
+            code: z.ZodIssueCode.custom,
+            message: 'Bitte eine Auswahl treffen',
+          });
+        }
+        if (data.invoices === 'Yes' && !data.recurringBills) {
+          ctx.addIssue({
+            path: ['recurringBills'],
+            code: z.ZodIssueCode.custom,
+            message: 'Bitte eine Auswahl treffen',
+          });
+        }
+      } else {
+        // NOT Einzelunternehmen
+        if (!data.incomingInvoices) {
+          ctx.addIssue({
+            path: ['incomingInvoices'],
+            code: z.ZodIssueCode.custom,
+            message: 'Bitte eine Auswahl treffen',
+          });
+        }
+        if (!data.recurringBills) {
+          ctx.addIssue({
+            path: ['recurringBills'],
+            code: z.ZodIssueCode.custom,
+            message: 'Bitte eine Auswahl treffen',
+          });
+        }
+
+        if (doubleEntry) {
+          // Double Entry + NOT Einzelunternehmen: outgoingInvoices required
+          if (!data.outgoingInvoices) {
+            ctx.addIssue({
+              path: ['outgoingInvoices'],
+              code: z.ZodIssueCode.custom,
+              message: 'Bitte eine Auswahl treffen',
+            });
+          }
+          if (data.person && data.person.length > 5) {
+            ctx.addIssue({
+              path: ['person'],
+              code: z.ZodIssueCode.custom,
+              message: 'Es können maximal 5 Personen angegeben werden.',
+            });
+          }
+        }
+      }
+
+      // Single Entry: cashrecipiets required
+      if (!doubleEntry) {
+        if (!data.cashrecipiets) {
+          ctx.addIssue({
+            path: ['cashrecipiets'],
+            code: z.ZodIssueCode.custom,
+            message: 'Bitte eine Auswahl treffen',
+          });
+        }
+      }
+
+      // ── Conditional validations (all flows) ──
+      if (data.bankFileObtain === 'No') {
+        if (!data.ibans || data.ibans.length === 0) {
+          ctx.addIssue({
+            path: ['ibans'],
+            code: z.ZodIssueCode.custom,
+            message: 'Mindestens ein IBAN ist anzugeben, wenn "Nein" ausgewählt wurde.',
+          });
+        }
+      }
+
+      if (data.bankFileObtain === 'Yes') {
+        if (!data.camtIbans || data.camtIbans.length === 0) {
+          ctx.addIssue({
+            path: ['camtIbans'],
+            code: z.ZodIssueCode.custom,
+            message: 'Mindestens ein IBAN ist anzugeben.',
+          });
+        }
+      }
+
+      if (data.ccFileObtain === 'Yes') {
+        if (!data.creditCards || data.creditCards.length === 0) {
+          ctx.addIssue({
+            path: ['creditCards'],
+            code: z.ZodIssueCode.custom,
+            message: 'Mindestens eine Kreditkarte ist anzugeben, wenn "Ja" ausgewählt wurde.',
+          });
+        }
+      }
+    });
+};

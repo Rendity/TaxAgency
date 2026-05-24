@@ -1,6 +1,9 @@
 import type { FolderNode, QuestionnaireDataType } from './types';
 // question.service.ts
 import { Buffer } from 'node:buffer';
+import { readFileSync, unlinkSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { parseStringPromise } from 'xml2js';
 import { saveQuestionnaire } from '@/app/api/questionnaire/repository';
 import { generateRandomPassword } from '@/lib/utils';
@@ -220,6 +223,33 @@ class NextCloudOperations {
     }
   }
 
+  public async uploadFile(remotePath: string, content: Buffer | string) {
+    const baseUrl = `${process.env.NEXTCLOUD_BASE_URL}/remote.php/dav/files/${encodeURIComponent(process.env.NEXTCLOUD_USER ?? '')}/${encodeURIComponent(this.rootClientFolder)}/`;
+    const url = `${baseUrl}${this.encodePath(remotePath)}`;
+
+    const requestOptions: RequestInit = {
+      method: 'PUT',
+      headers: {
+        Authorization: this.NEXTCLOUD_AUTH,
+      },
+      body: content,
+      redirect: 'follow' as RequestRedirect,
+    };
+
+    const response = await this.timedFetch(
+      `uploadFile(${remotePath})`,
+      url,
+      requestOptions,
+    );
+
+    if (response.ok || response.status === 201) {
+      console.warn(`File uploaded successfully: ${remotePath}`);
+      return true;
+    }
+    console.warn(`Unable to upload file: ${remotePath} (status: ${response.status})`);
+    return false;
+  }
+
   public async shareFolderWithGroup(FOLDER_PATH: string, groupName: string) {
     const url = `${process.env.NEXTCLOUD_BASE_URL}/ocs/v2.php/apps/files_sharing/api/v1/shares`;
     const urlencoded = new URLSearchParams({
@@ -311,7 +341,7 @@ class NextCloudOperations {
     }
   }
 
-  public async processFolders(groupName: string, doubleEntry: boolean, folderTree: FolderNode[] = [], ablageTree: FolderNode[] = []) {
+  public async processFolders(groupName: string, doubleEntry: boolean, folderTree: FolderNode[] = [], ablageTree: FolderNode[] = [], pendingUploads: PendingUpload[] = []) {
     let parentFolder = groupName;
     await this.createFolder(parentFolder);
 
@@ -338,8 +368,63 @@ class NextCloudOperations {
         const monthFolder = `${parentFolder}/${monthName}`;
         await this.createFolder(monthFolder);
 
+        const credentialsUpload = pendingUploads.find(
+          upload => upload.type === 'credentials',
+        );
+
+        if (credentialsUpload?.localFilePath && credentialsUpload?.remotePath) {
+          pendingUploads.push({
+            type: 'inline',
+            localFilePath: credentialsUpload.localFilePath,
+            remotePath: credentialsUpload.remotePath.replace(
+              `${parentFolder}/10_Kassa/`,
+              `${monthFolder}/10_Kassa/`,
+            ),
+          });
+        }
+
+        const advisorUpload = pendingUploads.find(
+          upload => upload.type === 'advisor',
+        );
+
+        if (advisorUpload?.localFilePath && advisorUpload?.remotePath) {
+          pendingUploads.push({
+            type: 'inline',
+            localFilePath: advisorUpload.localFilePath,
+            remotePath: advisorUpload.remotePath.replace(
+              `${parentFolder}/5_Bank/`,
+              `${monthFolder}/5_Bank/`,
+            ),
+          });
+        }
         await this.createFolderTree(monthFolder, folderTree);
       }
+
+      pendingUploads = pendingUploads.filter(
+        item => !['credentials', 'advisor'].includes(item.type),
+      );
+    }
+  }
+}
+
+type PendingUpload = {
+  type: 'advisor' | 'credentials' | 'inline';
+  remotePath: string;
+  localFilePath: string;
+};
+
+function createTempFile(fileName: string, content: string): string {
+  const localPath = join(tmpdir(), `${Date.now()}_${fileName}`);
+  writeFileSync(localPath, content, 'utf-8');
+  return localPath;
+}
+
+function cleanupTempFiles(uploads: PendingUpload[]) {
+  for (const upload of uploads) {
+    try {
+      unlinkSync(upload.localFilePath);
+    } catch {
+      // ignore cleanup errors
     }
   }
 }
@@ -372,11 +457,108 @@ export async function processNextCloud(data: QuestionnaireDataType) {
   // Step 2: Build the folder tree
   const folderTree: FolderNode[] = [];
   const ablageTree: FolderNode[] = [];
+  const pendingUploads: PendingUpload[] = [];
+
+  const currentYear = new Date().getFullYear();
+  const groupName = `${data.clientId}_${data.companyName}`;
+  let basePath = groupName;
+  if (data.doubleEntry) {
+    basePath = `${groupName}/${currentYear}`;
+  }
+  basePath = `${basePath}/Buchhaltung ${currentYear}`;
 
   // BELONGS TO STEP # 2
   if (data.payrollAccounting === 'Yes') {
     // folderTree.push({ name: 'Payroll' });
     addPathToTree(folderTree, ['1_Lohnverrechnung']);
+  }
+
+  // IBANS
+  addPathToTree(folderTree, ['5_Bank']);
+  if (data.ibans && data.ibans.length > 0) {
+    data.ibans.forEach((iban: { value: string }) => {
+      if (data.doubleEntry) {
+        addPathToTree(folderTree, ['5_Bank', formatIBAN(iban.value)]);
+      } else {
+        addPathToTree(folderTree, ['5_Bank', formatIBAN(iban.value), 'VERBUCHT']);
+      }
+    });
+  }
+  if (data.camtIbans && data.camtIbans.length > 0) {
+    data.camtIbans.forEach((iban: { value: string; advisorName?: string; advisorContact?: string }) => {
+      addPathToTree(folderTree, ['5_Bank', formatIBAN(iban.value)]);
+
+      if (iban.advisorName || iban.advisorContact) {
+        const content = `Advisor Name: ${iban.advisorName || 'N/A'}\nAdvisor Contact: ${iban.advisorContact || 'N/A'}`;
+        const ibanClean = iban.value.replace(/\s/g, '');
+        const localPath = createTempFile(`advisor_${ibanClean}.txt`, content);
+        const remotePath = `${basePath}/5_Bank/${formatIBAN(iban.value)}/ADVISOR_DETAILS.txt`;
+        pendingUploads.push({ type: 'advisor', remotePath, localFilePath: localPath });
+      }
+    });
+  }
+  if (data.hasPaymentProviders === 'Yes' && data.paymentProviders) {
+    addPathToTree(folderTree, ['9_PaymentServices']);
+    data.paymentProviders.forEach((provider: { name: string; checked: boolean }) => {
+      if (provider.checked) {
+        addPathToTree(folderTree, ['9_PaymentServices', provider.name]);
+      }
+    });
+  }
+
+  // CREDIT CARDS
+  if (data.creditCards && data.creditCards.length > 0) {
+    data.creditCards.forEach((cc: { value: string }) => {
+      addPathToTree(folderTree, ['8_Kreditkartenabrechnungen', maskCard(cc.value)]);
+    });
+  }
+
+  // INVESTORY FOLDER
+  if (data.inventory === 'Yes') {
+    addPathToTree(folderTree, ['11_Inventur']);
+  }
+
+  // OPTIONAL FOLDER
+  if (data.agmSettlements === 'Yes') {
+    addPathToTree(folderTree, ['7_HV-Abrechnungen']);
+  }
+
+  if (data.hasCashBalance === 'Yes') {
+    if (data.doubleEntry) {
+      addPathToTree(folderTree, ['12_Barbelege']);
+    } else {
+      addPathToTree(folderTree, ['12_Barbelege', 'VERBUCHT']);
+    }
+  }
+
+  if (
+    data.usesRegisterCash === 'Yes'
+    || (data.usesRegisterCash === 'No' && data.usesHandCash === 'Yes')) {
+    if (data.doubleEntry) {
+      addPathToTree(folderTree, ['10_Kassa']);
+    } else {
+      addPathToTree(folderTree, ['10_Kassa', 'VERBUCHT']);
+    }
+  }
+
+  if (data.usesRegisterCash === 'Yes' && data.cashDeskSystem) {
+    let nameOfService = data.cashDeskSystem.selected[0];
+    if (nameOfService === '__other__' && data.cashDeskSystem.other) {
+      nameOfService = data.cashDeskSystem.other;
+    }
+    if (nameOfService) {
+      // Under both directories
+      addPathToTree(folderTree, ['10_Kassa', nameOfService]);
+      addPathToTree(folderTree, ['3_Ausgangsrechnungen', nameOfService]);
+
+      if (data.cashDeskSystem.grantAccess === 'Yes') {
+        const cleanServiceName = nameOfService.replace(/\s/g, '');
+        const remotePath = `${basePath}/10_Kassa/${nameOfService}/CREDENTIALS.txt`;
+        const content = `Username: ${data.cashDeskSystem.username || 'N/A'}\nPassword: ${data.cashDeskSystem.password || 'N/A'}`;
+        const localPath = createTempFile(`credentials_${cleanServiceName}.txt`, content);
+        pendingUploads.push({ type: 'credentials', remotePath, localFilePath: localPath });
+      }
+    }
   }
 
   if (data.doubleEntry) {
@@ -392,10 +574,8 @@ export async function processNextCloud(data: QuestionnaireDataType) {
 
     // STEP # 4 MANDATORY FOLDER
     addPathToTree(folderTree, ['3_Ausgangsrechnungen']);
-
-    // STEP # 5 OPTIONAL FOLDER
-    if (data.agmSettlements === 'Yes') {
-      addPathToTree(folderTree, ['7_HV-Abrechnungen']);
+    if (data.onlineShopName !== undefined && data.onlineShopName.trim() !== '') {
+      addPathToTree(folderTree, ['3_Ausgangsrechnungen', data.onlineShopName.trim()]);
     }
 
     // STEP # 6 MANDATORY FOLDER
@@ -411,34 +591,7 @@ export async function processNextCloud(data: QuestionnaireDataType) {
         addPathToTree(folderTree, ['6_Barauslagen', `${person.firstName} ${person.lastName}`]);
       });
     }
-
-    // STEP # 8 - IBANS
-    addPathToTree(folderTree, ['5_Bank']);
-    if (data.ibans && data.ibans.length > 0) {
-      data.ibans.forEach((iban: { value: string }) => {
-        addPathToTree(folderTree, ['5_Bank', formatIBAN(iban.value)]);
-      });
-    }
-
-    // STEP # 9 - CREDIT CARDS
-    if (data.creditCards && data.creditCards.length > 0) {
-      data.creditCards.forEach((cc: { value: string }) => {
-        addPathToTree(folderTree, ['8_Kreditkartenabrechnungen', maskCard(cc.value)]);
-      });
-    }
-
-    // STEP # 10 - PAYPAL
-    // if (data.paypal === 'Yes') {
-    //   addPathToTree(folderTree, ['9_PayPal']);
-    // }
-    // STEP # 11 - CASH Register
-    if (data.cashDesk === 'Yes') {
-      addPathToTree(folderTree, ['10_Kassa']);
-    }
-    // STEP # 12 - Investory
-    if (data.inventory === 'Yes') {
-      addPathToTree(folderTree, ['11_Inventur']);
-    }
+  // ################ SINGLE ENTRY ################
   } else {
     // BELONGS TO STEP # 3
     // Create each dynamic category as a sibling folder
@@ -449,48 +602,12 @@ export async function processNextCloud(data: QuestionnaireDataType) {
         addPathToTree(ablageTree, ['2_Ablage', cat]);
       });
     }
-    // STEP # 4
-    addPathToTree(folderTree, ['5_Bank']);
-    if (data.ibans && data.ibans.length > 0) {
-      data.ibans.forEach((iban: { value: string }) => {
-        addPathToTree(folderTree, ['5_Bank', formatIBAN(iban.value), 'VERBUCHT']);
-      });
-    }
-
-    // STEP # 5 OPTIONAL FOLDER
-    if (data.agmSettlements === 'Yes') {
-      addPathToTree(folderTree, ['7_HV-Abrechnungen']);
-    }
 
     // STEP # 6 MANDATORY FOLDER
     addPathToTree(folderTree, ['4_Rechnungen']);
     // STEP # 6-1 OPTIONAL FOLDER
     if (data.recurringBills === 'Yes') {
       addPathToTree(folderTree, ['4_Rechnungen', 'Dauerrechnungen']);
-    }
-
-    // STEP # 7 - CREDIT CARDS
-    if (data.creditCards && data.creditCards.length > 0) {
-      data.creditCards.forEach((cc: { value: string }) => {
-        addPathToTree(folderTree, ['8_Kreditkartenabrechnungen', maskCard(cc.value)]);
-      });
-    }
-
-    // STEP # 8 - PAYPAL
-    // if (data.paypal === 'Yes') {
-    //   addPathToTree(folderTree, ['9_PayPal']);
-    // }
-    // STEP # 9 - CASH
-    if (data.cashrecipiets === 'Yes') {
-      addPathToTree(folderTree, ['12_Barbelege', 'VERBUCHT']);
-    }
-    // STEP # 10 - CASH Register
-    if (data.cashDesk === 'Yes') {
-      addPathToTree(folderTree, ['10_Kassa', 'VERBUCHT']);
-    }
-    // STEP # 11 - Investory
-    if (data.inventory === 'Yes') {
-      addPathToTree(folderTree, ['11_Inventur']);
     }
   }
 
@@ -501,12 +618,21 @@ export async function processNextCloud(data: QuestionnaireDataType) {
   }
 
   const operations = new NextCloudOperations();
-  const groupName = `${data.clientId}_${data.companyName}`;
 
   await operations.createGroup(groupName);
 
   // CREATE FOLDER TREE
-  await operations.processFolders(groupName, data.doubleEntry, folderTree, ablageTree);
+  await operations.processFolders(groupName, data.doubleEntry, folderTree, ablageTree, pendingUploads);
+
+  // UPLOAD PENDING FILES
+  try {
+    for (const upload of pendingUploads) {
+      const content = readFileSync(upload.localFilePath, 'utf-8');
+      await operations.uploadFile(upload.remotePath, content);
+    }
+  } finally {
+    cleanupTempFiles(pendingUploads);
+  }
 
   // Find or Create Group
   for (const account of accounts) {

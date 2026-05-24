@@ -109,6 +109,7 @@ export type QuestionnaireProps = {
   client: number;
   company: string;
   doubleEntry: boolean;
+  companyType?: string;
 };
 
 export type StepFormProps = {
