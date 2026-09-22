@@ -19,7 +19,7 @@ export default function SetupForm() {
     register,
     handleSubmit,
     // control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SetupFormValues>({
     resolver: zodResolver(SetupFormSchema),
     defaultValues: {
@@ -28,23 +28,29 @@ export default function SetupForm() {
   });
 
   const onSubmit = async (data: SetupFormValues) => {
-    const response = await fetch('/api/setup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+    setGeneratedUrl(null);
+    try {
+      const response = await fetch('/api/setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
 
-    if (response.ok) {
-      const result = await response.json();
-      if (result) {
-        const fullUrl = `${window.location.origin}/${locale}?company=${result.hash}`;
-        setGeneratedUrl(fullUrl);
-        navigator.clipboard.writeText(fullUrl)
-          .then(() => toast.success('Der Link wurde in die Zwischenablage kopiert!'))
-          .catch(() => toast.error('Link konnte nicht kopiert werden'));
+      if (response.ok) {
+        const result = await response.json();
+        if (result) {
+          const fullUrl = `${window.location.origin}/${locale}?company=${result.hash}`;
+          setGeneratedUrl(fullUrl);
+          navigator.clipboard.writeText(fullUrl)
+            .then(() => toast.success('Der Link wurde in die Zwischenablage kopiert!'))
+            .catch(() => toast.error('Link konnte nicht kopiert werden'));
+        }
+      } else {
+        const result = await response.json().catch(() => null);
+        toast.error(result?.message || 'Fehler beim Erstellen des Links');
       }
-    } else {
-      toast.error(response.statusText || 'Fehler beim Erstellen des Links');
+    } catch {
+      toast.error('Der Server ist nicht erreichbar. Bitte versuchen Sie es erneut.');
     }
   };
 
@@ -106,7 +112,7 @@ export default function SetupForm() {
           )}
         </div>
 
-        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+        <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 hover:bg-blue-700">
           Link für den neuen Klienten erstellen
         </Button>
       </form>

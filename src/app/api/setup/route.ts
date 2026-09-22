@@ -17,16 +17,31 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  let payload: unknown;
   try {
-    const payload = await req.json();
-    if (payload) {
-      const data = SetupFormSchema.parse(payload);
-
-      const result = await addSetupHash(data);
-      return NextResponse.json(result);
-    }
-  } catch (e) {
-    logger.error(e, `Error`);
+    payload = await req.json();
+  } catch {
+    return NextResponse.json({ message: 'Ungültiges JSON im Request.' }, { status: 400 });
   }
-  return NextResponse.json({ message: 'Invalid request body' }, { status: 400 });
+
+  const parsed = SetupFormSchema.safeParse(payload);
+  if (!parsed.success) {
+    return NextResponse.json({
+      message: 'Bitte überprüfen Sie die eingegebenen Klientendaten.',
+      errors: parsed.error.flatten().fieldErrors,
+    }, { status: 400 });
+  }
+
+  try {
+    const result = await addSetupHash(parsed.data);
+    if (!result) {
+      throw new Error('Setup link was not saved');
+    }
+    return NextResponse.json(result);
+  } catch (error) {
+    logger.error(error, 'Failed to create setup link');
+    return NextResponse.json({
+      message: 'Der Link konnte wegen eines Serverfehlers nicht erstellt werden. Bitte versuchen Sie es später erneut.',
+    }, { status: 500 });
+  }
 }
