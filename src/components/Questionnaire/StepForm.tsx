@@ -1,5 +1,6 @@
 /* eslint-disable react-dom/no-dangerously-set-innerhtml */
 import type { StepFormProps } from './types';
+import { useEffect, useRef } from 'react';
 import { Controller, useWatch } from 'react-hook-form';
 import FieldRenderer from './FieldRenderer';
 
@@ -43,6 +44,43 @@ export default function StepForm({
       return formValues?.[condition.field] === condition.value;
     });
   };
+
+  // Auto-advance: if step has a single visible boolean radio (Yes/No), go next on answer
+  const visibleFields = step.fields.filter(shouldShowField);
+  const singleField = visibleFields.length === 1 ? visibleFields[0] : null;
+  const isBooleanRadio = !!singleField
+    && singleField.type === 'radio'
+    && !!singleField.options
+    && singleField.options.length === 2
+    && singleField.options.every(o => o.value === 'Yes' || o.value === 'No');
+
+  const prevValueByStepRef = useRef<Record<number, any>>({});
+
+  useEffect(() => {
+    if (!isBooleanRadio || !singleField) {
+      return undefined;
+    }
+
+    const currentValue = formValues?.[singleField.name];
+    const prevValue = prevValueByStepRef.current[step.id];
+
+    // First visit: record initial value without advancing
+    if (prevValue === undefined) {
+      prevValueByStepRef.current[step.id] = currentValue;
+      return undefined;
+    }
+
+    // Value changed — auto-advance
+    if (currentValue && currentValue !== prevValue) {
+      prevValueByStepRef.current[step.id] = currentValue;
+      const timer = setTimeout(() => {
+        onNext();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+
+    return undefined;
+  }, [formValues, isBooleanRadio, singleField, onNext, step.id]);
 
   return (
     <div className="space-y-8">
